@@ -32,5 +32,19 @@ services:
       postgres:
         condition: service_healthy
 
+  frontend:
+    build:
+      context: ./familienplaner-frontend
+    container_name: familienplaner-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+    volumes:
+      - ./familienplaner-frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
 volumes:
   familienplaner_pgdata:

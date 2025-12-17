@@ -21,3 +21,5 @@ Thumbs.db
 # Env (global safety net)
 # ==============================
 .env
+.env.*
+!.env.example

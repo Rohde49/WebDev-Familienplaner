@@ -14,4 +14,18 @@ export default defineConfig({
         react(),
         tailwindcss(),
     ],
+    server: {
+        host: true,
+        port: 5173,
+        hmr: {
+            clientPort: 5173,
+        },
+        watch: {
+            usePolling: true,
+            interval: 200,
+        },
+    },
+    build: {
+        target: "es2022",
+    },
 });

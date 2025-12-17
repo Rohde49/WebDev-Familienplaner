@@ -24,7 +24,7 @@ const HomePage: React.FC = () => {
                                     {isAuthenticated ? `Hallo, ${displayName}!` : "Willkommen im Familienplaner"}
                                 </h1>
                                 <p className="lead">
-                                    Organisiere euren Alltag – einfach, übersichtlich und für die ganze Familie gemacht.
+                                    Organisiere deinen Alltag – einfach, übersichtlich und für die ganze Familie geeignet.
                                 </p>
 
                                 {/* CTA Buttons */}
