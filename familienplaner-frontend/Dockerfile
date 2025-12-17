@@ -1,4 +1,11 @@
-FROM ubuntu:latest
-LABEL authors="Jeremy"
+# ---------- dev ----------
+FROM node:20-alpine AS dev
+WORKDIR /app
 
-ENTRYPOINT ["top", "-b"]
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+
+EXPOSE 5173
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]

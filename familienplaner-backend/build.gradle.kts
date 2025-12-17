@@ -36,8 +36,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     // Datenbank: Postgres
-    // runtimeOnly("org.postgresql:postgresql")
-     runtimeOnly("com.h2database:h2")
+    runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("com.h2database:h2")
 
     // JWT / JJWT
     implementation("io.jsonwebtoken:jjwt-api:0.13.0")

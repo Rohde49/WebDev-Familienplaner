@@ -55,6 +55,9 @@ class SecurityConfig(
                     // Admin-Endpunkte nur für ROLE_ADMIN
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
+                    // Actuator (Health/Info) öffentlich für Docker/Monitoring
+                    .requestMatchers("/actuator/health", "/actuator/info").permitAll()
+
                     // alle anderen Endpunkte erfordern einen gültigen JWT
                     .anyRequest().authenticated()
             }

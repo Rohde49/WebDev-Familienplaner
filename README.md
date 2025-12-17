@@ -1,7 +1,7 @@
 # WebDev – Familienplaner 🗓️
 
 Ein moderner Full-Stack-Familienplaner als Webanwendung.  
-Das Projekt entsteht im Rahmen des Studiums (Web Engineering / Software Engineering) und dient als praxisnahes Beispiel für eine saubere Trennung von **Backend** und **Frontend** inklusive Authentifizierung, Benutzerverwaltung und moderner Toolchains.
+Das Projekt entsteht im Rahmen des Studiums (Web Eng 3, Web Design) und dient als praxisnahes Beispiel für eine saubere Trennung von **Backend** und **Frontend** inklusive Authentifizierung, Benutzerverwaltung und moderner Toolchains.
 
 ---
 
