@@ -45,7 +45,7 @@ body.no-scroll {
 
 /* Links bewusst neutral – Betonung über Klassen */
 a {
-    @apply text-slate-700 hover:text-slate-900;
+    @apply text-slate-600 hover:text-slate-900;
     text-decoration: none;
 }
 
@@ -73,7 +73,7 @@ select {
 
 :focus-visible {
     outline: none;
-    @apply ring-2 ring-sky-400 ring-offset-2;
+    @apply ring-2 ring-emerald-400 ring-offset-2;
 }
 
 /* ---------------------------

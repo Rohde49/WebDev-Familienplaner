@@ -68,8 +68,8 @@ const NavBar: React.FC = () => {
     );
 
     return (
-        <nav className="bg-white shadow-sm w-full border-b border-slate-200">
-            <div className="container-wide flex justify-between items-center py-4">
+        <nav className="bg-white shadow p-4 w-full">
+            <div className="container-wide flex justify-between items-center">
                 {/* Logo */}
                 <button
                     onClick={() => navigate(ROUTES.home)}

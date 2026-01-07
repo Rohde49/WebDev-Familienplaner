@@ -90,7 +90,7 @@ const RegisterPage: React.FC = () => {
                                 className={`input ${username.length > 0 && !usernameResult.valid ? "input-error" : ""}`}
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                placeholder="z.B. Peter"
+                                placeholder="Benutzername"
                                 autoComplete="username"
                                 disabled={loading}
                             />
@@ -111,7 +111,7 @@ const RegisterPage: React.FC = () => {
                                 className={`input ${password.length > 0 && !passwordResult.valid ? "input-error" : ""}`}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                placeholder="••••••••"
+                                placeholder="Passwort"
                                 autoComplete="new-password"
                                 disabled={loading}
                             />
@@ -140,7 +140,7 @@ const RegisterPage: React.FC = () => {
                                 }`}
                                 value={passwordConfirm}
                                 onChange={(e) => setPasswordConfirm(e.target.value)}
-                                placeholder="••••••••"
+                                placeholder="Passwort bestätigen"
                                 autoComplete="new-password"
                                 disabled={loading}
                             />

@@ -75,3 +75,36 @@ export function validatePasswordConfirmation(
     if (password !== confirm) errors.push("Passwörter stimmen nicht überein.");
     return { valid: errors.length === 0, errors };
 }
+
+/**
+ * Validiert den kompletten Passwort-Change Flow:
+ * - currentPassword muss gesetzt sein
+ * - newPassword muss Policy erfüllen (und optional != currentPassword)
+ * - confirm muss passen
+ *
+ * Ergebnis-Format bleibt identisch (valid + errors[]).
+ */
+export function validatePasswordChange(input: {
+    currentPassword: string;
+    newPassword: string;
+    newPasswordConfirm: string;
+}): ValidationResult {
+    const errors: string[] = [];
+
+    const current = input.currentPassword;
+    const next = input.newPassword;
+    const confirm = input.newPasswordConfirm;
+
+    if (current.trim().length === 0) {
+        errors.push("Bitte aktuelles Passwort eingeben.");
+        return { valid: false, errors };
+    }
+
+    const pw = validateNewPassword(next, current);
+    if (!pw.valid) errors.push(...pw.errors);
+
+    const conf = validatePasswordConfirmation(next, confirm);
+    if (!conf.valid) errors.push(...conf.errors);
+
+    return { valid: errors.length === 0, errors };
+}

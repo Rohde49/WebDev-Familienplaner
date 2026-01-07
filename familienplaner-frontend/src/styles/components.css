@@ -7,11 +7,11 @@
    --------------------------------- */
 
 .card {
-    @apply bg-white rounded-2xl border border-slate-200 shadow-md p-6 md:p-8;
+    @apply bg-white rounded-3xl border border-slate-200/80 shadow-lg p-6 md:p-8;
 }
 
 .card-soft {
-    @apply bg-white rounded-xl border border-slate-200 p-4 shadow-sm;
+    @apply bg-slate-100 rounded-xl border border-slate-200/80 p-4 shadow-sm;
 }
 
 .card-header {
@@ -52,7 +52,7 @@
 }
 
 .btn-primary {
-    @apply bg-emerald-500 text-white
+    @apply bg-emerald-500 text-white shadow-sm
     hover:bg-emerald-600 active:bg-emerald-700
     focus-visible:ring-emerald-500;
 }
@@ -181,10 +181,9 @@
 
 .nav-link {
     @apply inline-flex items-center gap-2
-    px-4 py-2 rounded-md
-    text-sm font-medium
+    px-3 py-2 border
+    border-slate-400 rounded-md
     bg-amber-50 text-slate-700
-    border border-slate-500
     hover:bg-amber-100 hover:text-slate-900 hover:border-slate-600
     active:bg-amber-300
     transition-colors duration-150
@@ -193,7 +192,7 @@
 }
 
 .nav-link-active {
-    @apply bg-amber-200 text-slate-900 border-slate-700
+    @apply bg-amber-200 text-slate-900 border-slate-600
     hover:bg-amber-300 hover:border-slate-600;
 }
 

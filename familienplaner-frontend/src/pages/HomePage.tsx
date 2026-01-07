@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { ROUTES } from "../router/paths";
 import { useAuth } from "../context/AuthContext";
@@ -86,73 +86,6 @@ const HomePage: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Content */}
-            <section className="section">
-                <div className="container">
-                    <div className="page-stack">
-                        <header className="page-header">
-                            <h2 className="h2">Was kannst du hier machen?</h2>
-                            <p className="text-body text-muted">
-                                Kurz & klar – damit jeder in der Familie sofort zurechtkommt.
-                            </p>
-                        </header>
-
-                        <div className="feature-grid">
-                            <div className="card-soft">
-                                <h3 className="h3">👤 Profil</h3>
-                                <p className="text-body">
-                                    Verwalte deine Angaben und behalte den Überblick über dein Konto.
-                                </p>
-                                <div className="mt-3">
-                                    <Link className="link-muted" to={ROUTES.profile}>
-                                        Profil öffnen
-                                    </Link>
-                                </div>
-                            </div>
-
-                            <div className="card-soft">
-                                <h3 className="h3">🍲 Rezepte</h3>
-                                <p className="text-body">
-                                    Speichere Lieblingsrezepte und plane Essen einfacher – super für den Familienalltag.
-                                </p>
-                                <div className="mt-3">
-                                    <Link className="link-muted" to={ROUTES.recipes}>
-                                        Rezepte ansehen
-                                    </Link>
-                                </div>
-                            </div>
-
-                            <div className="card-soft">
-                                <h3 className="h3">✅ Nächste Schritte</h3>
-                                <p className="text-body">
-                                    Als Nächstes können wir Aufgaben/ToDos, Listen oder einen Kalender ergänzen.
-                                </p>
-                                <div className="mt-3">
-                                    <span className="badge badge-neutral">In Planung</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {!isAuthenticated && (
-                            <div className="card-soft">
-                                <h3 className="h3">🔒 Für deine Familie</h3>
-                                <p className="text-body">
-                                    Melde dich an, um deinen persönlichen Bereich zu nutzen. Das Backend schützt alles per JWT.
-                                </p>
-                                <div className="mt-4 flex flex-wrap gap-3">
-                                    <Link className="btn btn-primary btn-md" to={ROUTES.login}>
-                                        Login
-                                    </Link>
-                                    <Link className="btn btn-ghost btn-md" to={ROUTES.register}>
-                                        Registrieren
-                                    </Link>
-                                </div>
-                            </div>
-                        )}
                     </div>
                 </div>
             </section>

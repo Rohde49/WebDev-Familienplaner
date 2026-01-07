@@ -1,10 +1,11 @@
 /*
  * ============================================================================
- * user.util – Helper rund um User-Daten (Anzeige/Checks)
+ * user.util – Helper rund um User-Daten
  * ============================================================================
  */
 
-import type { User } from "../types/index.types";
+import type { User, UpdateUserProfileRequest } from "../types/index.types";
+import { buildOptionalPayload, parseNullableInt, toNullableEmail, toNullableString } from "./form.util";
 
 /**
  * Gibt einen sinnvollen Anzeigenamen zurück.
@@ -13,11 +14,7 @@ import type { User } from "../types/index.types";
 export function getDisplayName(user: User | null | undefined): string {
     if (!user) return "Gast";
 
-    const first = (user.firstName ?? "").trim();
-    const last = (user.lastName ?? "").trim();
-
-    const full = `${first} ${last}`.trim();
-    if (full.length > 0) return full;
+    // (du hast das Fullname-Handling bewusst auskommentiert – lassen wir so)
 
     const username = (user.username ?? "").trim();
     if (username.length > 0) return username;
@@ -40,9 +37,51 @@ export function formatAge(age: number | null | undefined): string {
  */
 export function isProfileComplete(user: User | null | undefined): boolean {
     if (!user) return false;
+
     const emailOk = !!user.email && user.email.trim().length > 0;
     const nameOk =
         (!!user.firstName && user.firstName.trim().length > 0) ||
         (!!user.lastName && user.lastName.trim().length > 0);
+
     return emailOk && nameOk;
+}
+
+/* ============================================================================
+ * ProfilePage Helpers (User <-> Form <-> API Payload)
+ * ============================================================================
+ */
+
+export type ProfileFormValues = {
+    firstName: string;
+    lastName: string;
+    email: string;
+    age: string; // Input string, wird zentral geparst
+};
+
+export function toProfileForm(user: User): ProfileFormValues {
+    return {
+        firstName: user.firstName ?? "",
+        lastName: user.lastName ?? "",
+        email: user.email ?? "",
+        age: user.age === null || user.age === undefined ? "" : String(user.age),
+    };
+}
+
+export function toUpdateProfileRequest(
+    form: ProfileFormValues
+): { valid: true; payload: UpdateUserProfileRequest } | { valid: false; error: string } {
+    const age = parseNullableInt(form.age, { min: 0, max: 150 });
+    if (age === "invalid") {
+        return { valid: false, error: "Bitte gib ein gültiges Alter ein (0–150)." };
+    }
+
+    // Leere Inputs werden zu null → Felder können aktiv “gelöscht” werden
+    const base = buildOptionalPayload({
+        firstName: toNullableString(form.firstName),
+        lastName: toNullableString(form.lastName),
+        email: toNullableEmail(form.email),
+        age, // number | null
+    });
+
+    return { valid: true, payload: base as UpdateUserProfileRequest };
 }

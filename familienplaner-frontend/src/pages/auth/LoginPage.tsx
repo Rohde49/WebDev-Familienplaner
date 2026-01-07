@@ -72,7 +72,7 @@ const LoginPage: React.FC = () => {
                                 className="input"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                placeholder="z.B. Peter"
+                                placeholder="Benutzername"
                                 autoComplete="username"
                                 disabled={loading}
                             />
@@ -88,7 +88,7 @@ const LoginPage: React.FC = () => {
                                 className="input"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                placeholder="••••••••"
+                                placeholder="Passwort"
                                 autoComplete="current-password"
                                 disabled={loading}
                             />

@@ -23,6 +23,54 @@ export function emptyToNull(value: string): string | null {
 }
 
 /**
+ * Konvertiert beliebige Werte zu einem optionalen String:
+ * - nicht-string → null
+ * - whitespace/"" → null
+ * - sonst trimmed string
+ */
+export function toNullableString(value: unknown): string | null {
+    const v = safeTrim(value);
+    return v.length === 0 ? null : v;
+}
+
+/**
+ * Normalisiert E-Mail (optional, für konsistente Speicherung)
+ * - nicht-string → null
+ * - "" → null
+ * - trimmed + lowercased
+ */
+export function toNullableEmail(value: unknown): string | null {
+    const v = safeTrim(value);
+    if (v.length === 0) return null;
+    return v.toLowerCase();
+}
+
+/**
+ * Parst eine optionale Ganzzahl aus einem Form-Input:
+ * - ""/whitespace → null
+ * - keine Zahl / keine Ganzzahl → "invalid"
+ * - optional min/max Grenzen
+ */
+export function parseNullableInt(
+    value: unknown,
+    opts?: { min?: number; max?: number }
+): number | null | "invalid" {
+    const v = safeTrim(value);
+    if (v.length === 0) return null;
+
+    // Nur Ganzzahlen zulassen (kein "3.14", kein "1e2")
+    if (!/^-?\d+$/.test(v)) return "invalid";
+
+    const n = Number(v);
+    if (!Number.isFinite(n)) return "invalid";
+
+    if (opts?.min !== undefined && n < opts.min) return "invalid";
+    if (opts?.max !== undefined && n > opts.max) return "invalid";
+
+    return n;
+}
+
+/**
  * Entfernt Whitespace innerhalb eines Strings vollständig.
  * (praktisch für Username, falls du keine Leerzeichen erlaubst)
  */
@@ -46,10 +94,10 @@ export function normalizeUsername(username: string): string {
  * - undefined bleibt undefined (wird nicht gesendet)
  * - "" wird zu null (wenn du emptyToNull nutzt)
  */
-export function buildOptionalPayload<T extends Record<string, unknown>>(obj: T): Partial<T> {
+export function buildOptionalPayload<T extends object>(obj: T): Partial<T> {
     const payload: Partial<T> = {};
 
-    for (const [key, value] of Object.entries(obj)) {
+    for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
         if (value === undefined) continue;
         (payload as any)[key] = value;
     }
