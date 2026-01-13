@@ -5,7 +5,7 @@ import jakarta.persistence.*
 import java.time.LocalDateTime
 
 /**
- * Persistierter Benutzer der Anwendung.
+ * Persistierter Benutzer
  *
  * Enthält Login-Daten, Rolle, optionale Profildaten
  * sowie Audit-Felder (createdAt, updatedAt).

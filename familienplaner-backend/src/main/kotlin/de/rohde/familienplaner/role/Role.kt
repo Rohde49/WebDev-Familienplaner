@@ -1,7 +1,7 @@
 package de.rohde.familienplaner.role
 
 /**
- * Systemrollen für den Familienplaner.
+ * User-Rollen
  *
  * USER - normaler Benutzer
  * ADMIN - volle Administrationsrechte
@@ -9,4 +9,16 @@ package de.rohde.familienplaner.role
 enum class Role {
     USER,
     ADMIN
+}
+
+/**
+ * Recipe Tags
+ */
+enum class RecipeTag {
+    MEAL_PREP,
+    FRUEHSTUECK,
+    MITTAG,
+    NACHTISCH,
+    SCHNELL,
+    WEIHNACHTEN
 }

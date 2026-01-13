@@ -12,7 +12,8 @@ export * from "./axios";
 // APIs
 export * from "./auth.api";
 export * from "./user.api";
+export * from "./recipes.api";
 
 // Weitere Module folgen:
-// export * from "./recipes.api";
+//
 // export * from "./admin.api";

@@ -6,10 +6,20 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
+// Öffentlich
 import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
+
+// User
 import ProfilePage from "../pages/user/ProfilePage";
+
+// Recipes
+import RecipesPage from "../pages/recipes/RecipesPage";
+import AddRecipePage from "../pages/recipes/AddRecipePage";
+import EditRecipePage from "../pages/recipes/EditRecipePage";
+
+// Admin
 import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
 
 import { RequireAuth, RequireAdmin } from "./guards";
@@ -24,6 +34,8 @@ export const AppRouter: React.FC = () => {
             <Route path={ROUTES.register} element={<RegisterPage />} />
 
             {/* geschützte Routen */}
+
+            {/* User */}
             <Route
                 path={ROUTES.profile}
                 element={
@@ -33,6 +45,35 @@ export const AppRouter: React.FC = () => {
                 }
             />
 
+            {/* Recipes */}
+            <Route
+                path={ROUTES.recipes}
+                element={
+                    <RequireAuth>
+                        <RecipesPage />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path={ROUTES.addRecipe}
+                element={
+                    <RequireAuth>
+                        <AddRecipePage />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path={ROUTES.editRecipe}
+                element={
+                    <RequireAuth>
+                        <EditRecipePage />
+                    </RequireAuth>
+                }
+            />
+
+            {/* Admin */}
             <Route
                 path={ROUTES.admin}
                 element={
