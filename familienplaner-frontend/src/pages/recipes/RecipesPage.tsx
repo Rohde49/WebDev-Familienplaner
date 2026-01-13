@@ -1,11 +1,6 @@
 /*
  * ============================================================================
- * RecipesPage – Rezepte (UX polished)
- * ============================================================================
- * - TanStack Query für Server-State (Loading/Error/Cache)
- * - shadcn/ui für moderne Cards/Dialogs/Buttons
- * - Sonner Toasts für Feedback
- * - Owner/Admin: Edit/Delete nur wenn erlaubt (UI zeigt Zustand)
+ * RecipesPage – Rezepte (UX polished, token-first)
  * ============================================================================
  */
 
@@ -34,6 +29,7 @@ import {
 import { Skeleton } from "../../components/ui/skeleton";
 
 import { ChefHat, Plus, Pencil, Trash2, RefreshCcw } from "lucide-react";
+import { PageShell } from "../../components/layout/PageShell";
 
 const RECIPES_QUERY_KEY = ["recipes"] as const;
 
@@ -97,22 +93,29 @@ const RecipesPage: React.FC = () => {
     const openDeleteDialog = (id: number, title: string) => setDeleteTarget({ id, title });
 
     return (
-        <div className="mx-auto w-full max-w-6xl px-4 py-8">
-            {/* Header Section */}
-            <Card className="mb-8 rounded-2xl border-slate-200/70 bg-gradient-to-b from-slate-50 to-white shadow-sm">
+        <PageShell className="space-y-8">
+            {/* Header */}
+            <Card className="rounded-2xl border bg-card shadow-sm ">
                 <CardHeader className="space-y-2">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div className="min-w-0">
                             <div className="flex items-center gap-2">
-                                <ChefHat className="h-5 w-5 text-slate-700" />
+                                <span
+                                    className="grid h-9 w-9 place-items-center rounded-2xl border bg-muted"
+                                    aria-hidden
+                                >
+                                    <ChefHat className="h-5 w-5" />
+                                </span>
                                 <h1 className="text-2xl font-semibold tracking-tight">Rezepte</h1>
                             </div>
-                            <p className="mt-1 text-sm text-slate-600">
+
+                            <p className="mt-2 text-sm text-muted-foreground">
                                 Deine Sammlung an Rezepten – übersichtlich, schnell bearbeitbar und später erweiterbar.
                             </p>
-                            <p className="mt-1 text-xs text-slate-500">
-                                Bearbeiten/Löschen ist nur für <span className="font-medium">Owner</span> oder{" "}
-                                <span className="font-medium">Admin</span> möglich.
+                            <p className="mt-1 text-xs text-muted-foreground">
+                                Bearbeiten/Löschen ist nur für{" "}
+                                <span className="font-medium text-foreground">Owner</span> oder{" "}
+                                <span className="font-medium text-foreground">Admin</span> möglich.
                             </p>
                         </div>
 
@@ -128,11 +131,11 @@ const RecipesPage: React.FC = () => {
 
             {/* Error State */}
             {recipesQuery.isError && (
-                <Card className="mb-6 rounded-2xl border-red-200/70">
+                <Card className="rounded-2xl border-destructive/30 bg-card">
                     <CardHeader>
                         <CardTitle className="text-base">Fehler beim Laden</CardTitle>
                     </CardHeader>
-                    <CardContent className="text-sm text-slate-700">
+                    <CardContent className="text-sm text-muted-foreground">
                         {getErrorMessage(recipesQuery.error)}
                     </CardContent>
                     <CardFooter>
@@ -154,16 +157,11 @@ const RecipesPage: React.FC = () => {
                     {Array.from({ length: 6 }).map((_, i) => (
                         <Card key={i} className="rounded-2xl">
                             <CardHeader className="space-y-3">
-                                {/* Title + owner */}
                                 <div className="flex items-start justify-between gap-3">
                                     <Skeleton className="h-5 w-2/3" />
                                     <Skeleton className="h-5 w-16 rounded-full" />
                                 </div>
-
-                                {/* Meta */}
                                 <Skeleton className="h-3.5 w-1/2" />
-
-                                {/* Tags row */}
                                 <div className="flex flex-wrap gap-2">
                                     <Skeleton className="h-5 w-14 rounded-full" />
                                     <Skeleton className="h-5 w-16 rounded-full" />
@@ -172,14 +170,12 @@ const RecipesPage: React.FC = () => {
                             </CardHeader>
 
                             <CardContent className="space-y-3">
-                                {/* Ingredients chips */}
                                 <div className="flex flex-wrap gap-2">
                                     <Skeleton className="h-5 w-16 rounded-full" />
                                     <Skeleton className="h-5 w-20 rounded-full" />
                                     <Skeleton className="h-5 w-14 rounded-full" />
                                 </div>
 
-                                {/* Instruction preview */}
                                 <div className="space-y-2">
                                     <Skeleton className="h-4 w-full" />
                                     <Skeleton className="h-4 w-5/6" />
@@ -198,12 +194,12 @@ const RecipesPage: React.FC = () => {
                 /* Empty State */
                 <Card className="rounded-2xl">
                     <CardContent className="flex min-h-[calc(100vh-260px)] flex-col items-center justify-center py-16 text-center">
-                        <div className="mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-slate-100 shadow-sm">
-                            <ChefHat className="h-6 w-6 text-slate-700" />
+                        <div className="mb-5 grid h-14 w-14 place-items-center rounded-2xl border bg-muted shadow-sm">
+                            <ChefHat className="h-6 w-6" />
                         </div>
 
                         <h2 className="text-lg font-semibold">Noch keine Rezepte</h2>
-                        <p className="mt-1 max-w-md text-sm text-slate-600">
+                        <p className="mt-1 max-w-md text-sm text-muted-foreground">
                             Erstelle dein erstes Rezept – danach erscheint es hier als übersichtliche Card.
                         </p>
 
@@ -232,7 +228,7 @@ const RecipesPage: React.FC = () => {
                         return (
                             <Card
                                 key={r.id}
-                                onClick={() => navigate(ROUTES.recipeEdit(r.id))}
+                                onClick={() => navigate(ROUTES.recipeDetail(r.id))}
                                 className="
                                     group cursor-pointer rounded-2xl
                                     transition-all
@@ -338,7 +334,6 @@ const RecipesPage: React.FC = () => {
                         );
                     })}
                 </div>
-
             )}
 
             {/* Delete Confirm Dialog */}
@@ -376,7 +371,7 @@ const RecipesPage: React.FC = () => {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </div>
+        </PageShell>
     );
 };
 

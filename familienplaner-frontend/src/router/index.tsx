@@ -18,6 +18,7 @@ import ProfilePage from "../pages/user/ProfilePage";
 import RecipesPage from "../pages/recipes/RecipesPage";
 import AddRecipePage from "../pages/recipes/AddRecipePage";
 import EditRecipePage from "../pages/recipes/EditRecipePage";
+import DetailRecipePage from "../pages/recipes/DetailRecipePage";
 
 // Admin
 import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
@@ -69,6 +70,15 @@ export const AppRouter: React.FC = () => {
                 element={
                     <RequireAuth>
                         <EditRecipePage />
+                    </RequireAuth>
+                }
+            />
+
+            <Route
+                path={ROUTES.detailRecipe}
+                element={
+                    <RequireAuth>
+                        <DetailRecipePage />
                     </RequireAuth>
                 }
             />

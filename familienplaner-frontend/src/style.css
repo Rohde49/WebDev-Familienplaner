@@ -68,7 +68,7 @@
     --radius: 0.625rem;
 
     /* --- Light: make neutrals a touch warmer/natural (160) --- */
-    --background: oklch(0.992 0.006 160);
+    --background: oklch(0.992 0.010 145);
     --foreground: oklch(0.18 0.015 255);
 
     --card: oklch(0.996 0.004 160);
