@@ -62,112 +62,138 @@
 }
 
 /* ============================================================================
-   Tokens (Light) – Minty / family-friendly / modern
+   Tokens (Light) –
    ========================================================================== */
 :root {
     --radius: 0.625rem;
 
-    /* --- Light: make neutrals a touch warmer/natural (160) --- */
-    --background: oklch(0.992 0.010 145);
+    /*--- Background - bläulich  ---*/
+    --background: oklch(0.985 0.014 195);
     --foreground: oklch(0.18 0.015 255);
 
-    --card: oklch(0.996 0.004 160);
-    --card-foreground: oklch(0.18 0.015 255);
+    /* Primär (Buttons, Fokus) - petrol light */
+    --primary: oklch(0.66 0.12 195);
+    --primary-foreground: oklch(0.99 0.01 150);
 
-    --popover: oklch(0.996 0.004 160);
-    --popover-foreground: oklch(0.18 0.015 255);
-
-    /* Primary stays natural leaf-mint (145) */
-    --primary: oklch(0.68 0.16 145);
-    --primary-foreground: oklch(0.99 0.01 145);
-
-    /* Secondary: neutral surface (calm) */
-    --secondary: oklch(0.965 0.01 160);
+    /* Sekundär (Cards, Secondary Buttons) */
+    --secondary: oklch(0.955 0.012 195);
     --secondary-foreground: oklch(0.22 0.02 255);
 
-    /* Muted: for subtle panels, skeletons, secondary areas */
-    --muted: oklch(0.975 0.008 160);
-    --muted-foreground: oklch(0.53 0.02 255);
-
-    /* Accent: used by shadcn for hover/selected backgrounds → keep calm (not colorful) */
-    --accent: oklch(0.965 0.015 160);
+    /* Akzent (Badges, Hover, Highlights) - helleres petrol light */
+    --accent: oklch(0.93 0.035 205);
+    --accent-warm: oklch(0.82 0.12 90);
     --accent-foreground: oklch(0.22 0.02 255);
 
-    /* Destructive: friendly but clear red (not neon) */
+    /* Neutrale Surface (Sections, Hero) */
+    --surface: oklch(0.975 0.018 195);
+    --hover: oklch(0.955 0.030 200);
+
+    /* Muted (Skeletons, Subtle Text BGs) */
+    --muted: oklch(0.965 0.01 200);
+    --muted-foreground: oklch(0.53 0.02 255);
+
+    /* Signalfarbe */
     --destructive: oklch(0.62 0.22 25);
 
-    /* Borders/inputs: soft, modern */
-    --border: oklch(0.92 0.01 160);
-    --input: oklch(0.92 0.01 160);
+    /* Inputs, Border, Focus ring */
+    --input: oklch(0.955 0.01 195);
+    --border: oklch(0.92 0.01 195);
+    --ring: oklch(0.70 0.12 195);
 
-    /* Ring: tie focus directly to primary */
-    --ring: oklch(0.68 0.16 145);
+    /* Cards visuell über background */
+    --card: oklch(0.995 0.006 195);
+    --card-foreground: oklch(0.18 0.015 255);
 
-    /* Colorful accents (use for charts, category badges, icons, etc.) */
-    --chart-1: oklch(0.68 0.16 145); /* mint */
-    --chart-2: oklch(0.72 0.12 220); /* sky */
-    --chart-3: oklch(0.68 0.13 300); /* violet */
-    --chart-4: oklch(0.78 0.14 95);  /* warm yellow */
-    --chart-5: oklch(0.70 0.17 30);  /* coral */
+    /* Popovers visuell über background */
+    --popover: oklch(0.995 0.006 195);
+    --popover-foreground: oklch(0.18 0.015 255);
 
-    /* Sidebar (keep consistent with surfaces) */
-    --sidebar: oklch(0.988 0.006 160);
+    /* Charts / spielerische Akzente */
+    --chart-1: oklch(0.66 0.12 195); /* teal / primary */
+    --chart-2: oklch(0.72 0.10 225); /* soft sky */
+    --chart-3: oklch(0.70 0.10 300); /* soft violet */
+    --chart-4: oklch(0.82 0.12 90);  /* honey (passt zu accent-warm) */
+    --chart-5: oklch(0.72 0.14 35);  /* warm coral */
+
+    /*--- Sidebar ---*/
+    --sidebar: oklch(0.978 0.016 195);
     --sidebar-foreground: oklch(0.18 0.015 255);
-    --sidebar-primary: oklch(0.68 0.16 145);
-    --sidebar-primary-foreground: oklch(0.99 0.01 145);
-    --sidebar-accent: oklch(0.965 0.01 160);
+
+    --sidebar-primary: oklch(0.66 0.12 195);
+    --sidebar-primary-foreground: oklch(0.99 0.006 195);
+
+    --sidebar-accent: oklch(0.955 0.012 195);
     --sidebar-accent-foreground: oklch(0.22 0.02 255);
-    --sidebar-border: oklch(0.92 0.01 160);
-    --sidebar-ring: oklch(0.68 0.16 145);
+
+    --sidebar-border: oklch(0.92 0.012 195);
+    --sidebar-ring: oklch(0.66 0.12 195);
 }
 
 /* ============================================================================
-   Tokens (Dark) – Calm dark, mint pops cleanly
+   Tokens (Dark) – Calm dark, teal pops cleanly (Alternative 1)
    ========================================================================== */
 .dark {
-    --background: oklch(0.16 0.01 255);
-    --foreground: oklch(0.98 0.004 170);
+    /* Background / foreground */
+    --background: oklch(0.17 0.015 240);
+    --foreground: oklch(0.98 0.006 200);
 
-    --card: oklch(0.20 0.012 255);
-    --card-foreground: oklch(0.98 0.004 170);
+    /* Cards / Popovers (slightly above background) */
+    --card: oklch(0.22 0.018 240);
+    --card-foreground: oklch(0.98 0.006 200);
 
-    --popover: oklch(0.20 0.012 255);
-    --popover-foreground: oklch(0.98 0.004 170);
+    --popover: oklch(0.22 0.018 240);
+    --popover-foreground: oklch(0.98 0.006 200);
 
-    /* Primary stays natural leaf-mint (145) */
-    --primary: oklch(0.74 0.16 145);
-    --primary-foreground: oklch(0.18 0.03 145);
+    /* Primary (teal / petrol) */
+    --primary: oklch(0.72 0.11 195);
+    --primary-foreground: oklch(0.18 0.020 240);
 
-    --secondary: oklch(0.24 0.012 255);
-    --secondary-foreground: oklch(0.98 0.004 170);
+    /* Secondary / muted / accent surfaces */
+    --secondary: oklch(0.26 0.018 240);
+    --secondary-foreground: oklch(0.98 0.006 200);
 
-    --muted: oklch(0.24 0.02 170);
-    --muted-foreground: oklch(0.72 0.02 255);
+    --muted: oklch(0.26 0.018 240);
+    --muted-foreground: oklch(0.74 0.020 220);
 
-    --accent: oklch(0.26 0.03 170);
-    --accent-foreground: oklch(0.98 0.004 170);
+    --accent: oklch(0.30 0.030 210);
+    --accent-foreground: oklch(0.98 0.006 200);
 
+    /* Optional warm accent token (works great in dark too) */
+    --accent-warm: oklch(0.78 0.12 90);
+
+    /* Destructive */
     --destructive: oklch(0.72 0.19 25);
 
+    /* Borders / inputs: subtle but visible */
     --border: oklch(1 0 0 / 12%);
     --input: oklch(1 0 0 / 16%);
 
-    --ring: oklch(0.74 0.16 145);
+    /* Ring: tied to primary */
+    --ring: oklch(0.72 0.11 195);
 
-    --chart-1: oklch(0.74 0.16 145);
-    --chart-2: oklch(0.76 0.12 220);
-    --chart-3: oklch(0.74 0.13 300);
-    --chart-4: oklch(0.82 0.14 95);
-    --chart-5: oklch(0.74 0.17 30);
+    /* Optional helper surfaces (if you use them) */
+    --surface: oklch(0.20 0.018 240);
+    --hover: oklch(0.28 0.028 210);
 
-    --sidebar: oklch(0.20 0.012 255);
-    --sidebar-foreground: oklch(0.98 0.004 170);
-    --sidebar-primary: oklch(0.74 0.16 145);
-    --sidebar-primary-foreground: oklch(0.18 0.03 145);
-    --sidebar-accent: oklch(0.24 0.012 255);
-    --sidebar-accent-foreground: oklch(0.98 0.004 170);
+    /* Charts */
+    --chart-1: oklch(0.72 0.11 195); /* teal */
+    --chart-2: oklch(0.78 0.10 225); /* sky */
+    --chart-3: oklch(0.76 0.10 300); /* violet */
+    --chart-4: oklch(0.78 0.12 90);  /* honey */
+    --chart-5: oklch(0.76 0.14 35);  /* coral */
+
+    /* Sidebar */
+    --sidebar: oklch(0.20 0.018 240);
+    --sidebar-foreground: oklch(0.98 0.006 200);
+
+    --sidebar-primary: oklch(0.72 0.11 195);
+    --sidebar-primary-foreground: oklch(0.18 0.020 240);
+
+    --sidebar-accent: oklch(0.26 0.018 240);
+    --sidebar-accent-foreground: oklch(0.98 0.006 200);
+
     --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.74 0.16 145);
+    --sidebar-ring: oklch(0.72 0.11 195);
 }
 
 /* ============================================================================
@@ -194,17 +220,16 @@
         min-height: 100vh;
     }
 
-    /* shadcn default border token */
     * {
         @apply border-border;
     }
 
-    /* Focus only when it matters (keyboard), using ring token */
     :focus-visible {
-        outline: 2px solid oklch(var(--ring));
+        outline: 2px solid var(--ring);
         outline-offset: 2px;
     }
 }
+
 /* ============================================================================
    Components Layer (minimal, token-based)
    ========================================================================== */
@@ -218,7 +243,7 @@
     }
 
     .ui-focus {
-        @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+        @apply transition-all hover:shadow-md hover:ring-1 hover:ring-ring focus-within:ring-2 focus-within:ring-ring;
     }
 
     .ui-container {

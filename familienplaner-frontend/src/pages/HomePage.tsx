@@ -54,7 +54,7 @@ const HomePage: React.FC = () => {
                 description: "Schnell etwas finden oder neue Ideen speichern.",
                 cta: "Zu den Rezepten",
                 onClick: () => navigate(ROUTES.recipes),
-                variant: "secondary",
+                variant: "primary",
             },
         ];
 
@@ -73,7 +73,7 @@ const HomePage: React.FC = () => {
 
     const headline = isAuthenticated ? `Hallo, ${displayName}!` : "Willkommen im Familienplaner";
     const subline = isAuthenticated
-        ? "Schön, dass du da bist. Starte mit einem Schnellzugriff oder stöbere in deinen Rezepten."
+        ? "Schön, dass du da bist. Hab einen schönen Tag und schätze deine Zeit."
         : "Organisiere euren Alltag – ruhig, modern und angenehm einfach für die ganze Familie.";
 
     return (
@@ -83,10 +83,6 @@ const HomePage: React.FC = () => {
                 <div className="p-6 sm:p-8">
                     <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
                         <div className="space-y-4">
-                            <p className="inline-flex items-center rounded-full border bg-secondary px-3 py-1 text-sm text-secondary-foreground">
-                                🌿 Minty & familienfreundlich
-                            </p>
-
                             <div className="space-y-2">
                                 <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
                                     {headline}
@@ -126,7 +122,7 @@ const HomePage: React.FC = () => {
                                         </button>
                                         <button
                                             type="button"
-                                            className="ui-focus inline-flex items-center justify-center rounded-xl border bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground shadow-sm transition hover:bg-accent active:brightness-95"
+                                            className="ui-focus inline-flex items-center justify-center rounded-xl border bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground shadow-sm transition hover:brightness-95 active:brightness-90"
                                             onClick={() => navigate(ROUTES.recipes)}
                                         >
                                             Rezepte
@@ -135,7 +131,7 @@ const HomePage: React.FC = () => {
                                         {admin && (
                                             <button
                                                 type="button"
-                                                className="ui-focus inline-flex items-center justify-center rounded-xl border bg-transparent px-4 py-2 text-sm font-medium text-foreground transition hover:bg-accent"
+                                                className="ui-focus inline-flex items-center justify-center rounded-xl border bg-destructive px-4 py-2 text-sm font-medium text-foreground shadow-sm transition hover:brightness-95 active:brightness-90"
                                                 onClick={() => navigate(ROUTES.admin)}
                                             >
                                                 Admin
@@ -146,7 +142,7 @@ const HomePage: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Right side: playful “status / tip” panel */}
+                        {/* Right side */}
                         <div className="w-full max-w-md">
                             <div className="rounded-2xl border bg-muted p-5 text-sm text-muted-foreground">
                                 <div className="flex items-center justify-between">
@@ -183,7 +179,7 @@ const HomePage: React.FC = () => {
                         </h2>
                         <p className="text-sm text-muted-foreground">
                             {isAuthenticated
-                                ? "Alles Wichtige in 1 Klick."
+                                ? "Alles Wichtige mit einem Klick."
                                 : "Erstelle ein Konto oder melde dich an, um loszulegen."}
                         </p>
                     </div>
@@ -229,7 +225,7 @@ const HomePage: React.FC = () => {
                 </div>
             </section>
 
-            {/* FEATURES (simple, calm, friendly) */}
+            {/* FEATURES */}
             <section className="space-y-4">
                 <h2 className="text-xl font-semibold tracking-tight">Warum das gut funktioniert</h2>
 

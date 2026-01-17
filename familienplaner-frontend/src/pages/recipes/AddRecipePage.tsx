@@ -18,11 +18,11 @@ const TAG_OPTIONS: { value: RecipeTag; label: string }[] = [
 ];
 
 const inputBase =
-    "ui-focus w-full rounded-xl border bg-card px-3 py-2 text-sm text-foreground shadow-sm " +
+    "ui-focus w-full rounded-xl border bg-input px-3 py-2 text-sm text-foreground shadow-sm " +
     "placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-60";
 
-const labelBase = "text-sm font-medium text-foreground";
-const hintBase = "text-xs text-muted-foreground";
+const labelBase = "text-lg font-medium text-foreground";
+const hintBase = "text-md text-muted-foreground";
 
 function Alert({
                    variant,
@@ -154,7 +154,7 @@ const AddRecipePage: React.FC = () => {
                         <div className="flex items-end justify-between gap-4">
                             <div className="space-y-1">
                                 <label className={labelBase} htmlFor="ingredients">
-                                    Zutaten (optional)
+                                    Zutaten
                                 </label>
                                 <p className={hintBase}>Eine Zutat pro Zeile.</p>
                             </div>
@@ -194,7 +194,7 @@ const AddRecipePage: React.FC = () => {
                         <div className="flex items-end justify-between gap-4">
                             <div className="space-y-1">
                                 <label className={labelBase} htmlFor="instruction">
-                                    Anleitung (optional)
+                                    Anleitung
                                 </label>
                                 <p className={hintBase}>Schritt für Schritt – kurz und klar.</p>
                             </div>
@@ -217,9 +217,13 @@ const AddRecipePage: React.FC = () => {
 
                     {/* Tags */}
                     <section className="space-y-3">
-                        <div className="space-y-1">
-                            <p className="text-sm font-medium text-foreground">Tags (optional)</p>
-                            <p className={hintBase}>Hilft beim Filtern und schnellen Wiederfinden.</p>
+                        <div className="flex items-end justify-between gap-4">
+                            <div className="space-y-1">
+                                <label className={labelBase} htmlFor="tags">
+                                    Tags
+                                </label>
+                                <p className={hintBase}>Hilft beim Filtern und schnellen Wiederfinden.</p>
+                            </div>
                         </div>
 
                         <div className="flex flex-wrap gap-2">

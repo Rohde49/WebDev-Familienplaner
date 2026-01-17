@@ -269,7 +269,7 @@ const DetailRecipePage: React.FC = () => {
 
                         <button
                             type="button"
-                            className="ui-focus inline-flex items-center justify-center rounded-xl bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground shadow-sm transition hover:brightness-95 active:brightness-90 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="ui-focus inline-flex items-center justify-center rounded-xl bg-destructive/85 px-4 py-2 text-sm font-medium text-destructive-foreground shadow-sm transition hover:bg-destructive active:brightness-90 disabled:cursor-not-allowed disabled:opacity-60"
                             disabled={!canEditOrDelete}
                             onClick={() => setConfirmDelete(true)}
                         >

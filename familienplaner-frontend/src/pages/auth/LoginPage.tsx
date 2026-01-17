@@ -10,7 +10,7 @@ import { normalizeUsername, getErrorMessage } from "../../util/index.util";
 import { PageShell } from "../../components/layout/PageShell";
 
 const inputBase =
-    "ui-focus w-full rounded-xl border bg-background px-3 py-2 text-sm text-foreground shadow-sm " +
+    "ui-focus w-full rounded-xl border bg-input px-3 py-2 text-sm text-foreground shadow-sm " +
     "placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-60";
 
 const labelBase = "text-sm font-medium text-foreground";

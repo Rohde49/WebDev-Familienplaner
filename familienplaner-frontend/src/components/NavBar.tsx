@@ -16,7 +16,6 @@ type NavItem = {
     to: string;
     icon?: React.ReactNode;
     show?: boolean;
-    /** If true, use "startsWith" matching for nested routes (e.g. /recipes/123) */
     matchPrefix?: boolean;
 };
 
@@ -61,7 +60,7 @@ const NavBar: React.FC = () => {
         },
         { label: "Login", to: ROUTES.login, show: !isAuthenticated },
         { label: "Registrieren", to: ROUTES.register, show: !isAuthenticated },
-    ].filter((i) => i.show !== false);
+    ].filter((i) => i.show);
 
     const isPathActive = (item: NavItem) => {
         if (item.to === ROUTES.home) return location.pathname === ROUTES.home;
@@ -70,8 +69,8 @@ const NavBar: React.FC = () => {
     };
 
     const linkBase =
-        "ui-focus inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors";
-    const linkInactive = "text-muted-foreground hover:text-foreground hover:bg-accent";
+        "ui-focus inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm";
+    const linkInactive = "bg-muted text-muted-foreground hover:text-foreground hover:bg-accent";
     const linkActive = "bg-accent text-foreground";
 
     const Brand = (
@@ -80,7 +79,7 @@ const NavBar: React.FC = () => {
                 setMobileOpen(false);
                 navigate(ROUTES.home);
             }}
-            className="ui-focus inline-flex items-center gap-2 whitespace-nowrap rounded-xl px-2 py-1 text-base font-semibold tracking-tight hover:bg-accent"
+            className="ui-focus inline-flex items-center gap-2 whitespace-nowrap rounded-xl px-2 py-1 text-xl font-semibold tracking-tight hover:bg-accent"
             aria-label="Zur Startseite"
             type="button"
         >
@@ -90,7 +89,7 @@ const NavBar: React.FC = () => {
     );
 
     return (
-        <nav className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+        <nav className="sticky top-0 z-40 w-full border-b-2 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70">
             <div className="ui-container flex items-center justify-between gap-3 py-3">
                 {/* Brand */}
                 {Brand}
@@ -109,11 +108,11 @@ const NavBar: React.FC = () => {
                         </NavLink>
                     ))}
 
-                    {/* Logout only on desktop, only when authenticated */}
+                    {/* Logout nur auf Desktop */}
                     {isAuthenticated && (
                         <Button
-                            variant="secondary"
-                            className="ml-1 ui-focus"
+                            variant="ghost"
+                            className={cn(linkBase,linkInactive)}
                             onClick={handleLogout}
                         >
                             <LogOut className="mr-2 h-4 w-4" />

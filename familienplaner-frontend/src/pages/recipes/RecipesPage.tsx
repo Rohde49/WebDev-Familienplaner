@@ -95,7 +95,7 @@ const RecipesPage: React.FC = () => {
     return (
         <PageShell className="space-y-8">
             {/* Header */}
-            <Card className="rounded-2xl border bg-card shadow-sm ">
+            <Card className="rounded-2xl border bg-card shadow-sm">
                 <CardHeader className="space-y-2">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div className="min-w-0">
