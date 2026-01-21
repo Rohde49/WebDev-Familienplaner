@@ -4,6 +4,7 @@ import de.rohde.familienplaner.user.dto.ChangePasswordRequestDto
 import de.rohde.familienplaner.user.dto.UpdateUserProfileRequestDto
 import de.rohde.familienplaner.user.dto.UserResponseDto
 import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
@@ -51,6 +52,18 @@ class UserController(
     ): UserResponseDto {
         val currentUser = userService.getUserByUsername(principal.username)
         return userService.changePassword(currentUser.id, request)
+    }
+
+    /**
+     * Löscht den User des aktuell angemeldeten Benutzers
+     * DELETE /api/users/me
+     */
+    @DeleteMapping("/me")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteCurrentUser(
+        @AuthenticationPrincipal userDetails: UserDetails
+    ) {
+        userService.deleteByUsername(userDetails.username)
     }
 
     /**

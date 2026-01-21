@@ -127,4 +127,15 @@ class UserService(
         val saved = userRepository.save(user)
         return UserMapper.toResponse(saved)
     }
+
+    /**
+     * Löscht einen User per Username.
+     */
+    @Transactional
+    fun deleteByUsername(username: String) {
+        val user = userRepository.findByUsername(username)
+            ?: throw ResourceNotFoundException("User not found")
+
+        userRepository.delete(user)
+    }
 }

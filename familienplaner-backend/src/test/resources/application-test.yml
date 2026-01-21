@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:55432/familienplaner_test
+    username: test
+    password: test
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+
+security:
+  jwt:
+    secret: super-geheimes-dev-secret-mindestens-32-bytes!!
+    expiration-minutes: 60

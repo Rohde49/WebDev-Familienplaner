@@ -37,7 +37,7 @@ dependencies {
 
     // Datenbank: Postgres
     runtimeOnly("org.postgresql:postgresql")
-    runtimeOnly("com.h2database:h2")
+    //runtimeOnly("com.h2database:h2")
 
     // JWT / JJWT
     implementation("io.jsonwebtoken:jjwt-api:0.13.0")
@@ -49,6 +49,8 @@ dependencies {
 
     // --- Tests ---
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:postgresql")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

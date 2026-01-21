@@ -1,18 +1,20 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* ============================================================================
-   Global Styles (Best Practice)
-   - Tailwind v4 entrypoint
-   - shadcn tokens (CSS variables) incl. dark mode
-   - minimal base layer (reset + body)
-   ========================================================================== */
+/* =============================================================================
+   Familienplaner – Global Styles (Best Practice, Light Only)
+   - Tailwind v4 entry
+   - Token-basierte Farben (shadcn-style CSS variables)
+   - Minimales Base Layer + kleine Component-Utilities
+   ============================================================================= */
 
-/* shadcn: dark variant helper */
-@custom-variant dark (&:is(.dark *));
-
-/* shadcn: map CSS vars to Tailwind theme tokens */
+/* =============================================================================
+   1) Tailwind Theme Bridge (CSS Vars -> Tailwind Colors/Radii)
+   Damit kannst du in TSX sauber sowas nutzen wie:
+   - bg-background, text-foreground, border-border, ring-ring, bg-card, ...
+   ============================================================================= */
 @theme inline {
+    /* Radius scale (shadcn-konform) */
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);
     --radius-lg: var(--radius);
@@ -21,6 +23,7 @@
     --radius-3xl: calc(var(--radius) + 12px);
     --radius-4xl: calc(var(--radius) + 16px);
 
+    /* Core surfaces/text */
     --color-background: var(--background);
     --color-foreground: var(--foreground);
     --color-card: var(--card);
@@ -28,29 +31,35 @@
     --color-popover: var(--popover);
     --color-popover-foreground: var(--popover-foreground);
 
+    /* Brand & semantic */
     --color-primary: var(--primary);
     --color-primary-foreground: var(--primary-foreground);
-
     --color-secondary: var(--secondary);
     --color-secondary-foreground: var(--secondary-foreground);
-
-    --color-muted: var(--muted);
-    --color-muted-foreground: var(--muted-foreground);
-
     --color-accent: var(--accent);
     --color-accent-foreground: var(--accent-foreground);
-
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
     --color-destructive: var(--destructive);
+
+    /* UI primitives */
     --color-border: var(--border);
     --color-input: var(--input);
     --color-ring: var(--ring);
 
+    /* Extra tokens (optional, aber sehr praktisch im Projekt) */
+    --color-surface: var(--surface);
+    --color-hover: var(--hover);
+    --color-accent-warm: var(--accent-warm);
+
+    /* Charts */
     --color-chart-1: var(--chart-1);
     --color-chart-2: var(--chart-2);
     --color-chart-3: var(--chart-3);
     --color-chart-4: var(--chart-4);
     --color-chart-5: var(--chart-5);
 
+    /* Sidebar (falls du sie verwendest) */
     --color-sidebar: var(--sidebar);
     --color-sidebar-foreground: var(--sidebar-foreground);
     --color-sidebar-primary: var(--sidebar-primary);
@@ -61,61 +70,64 @@
     --color-sidebar-ring: var(--sidebar-ring);
 }
 
-/* ============================================================================
-   Tokens (Light) –
-   ========================================================================== */
+/* =============================================================================
+   2) Design Tokens (Light)
+   - Semantische Tokens: background/card/primary/muted/...
+   - Werte in OKLCH: modern, konsistent, gut für spätere Dark-Variante
+   ============================================================================= */
 :root {
     --radius: 0.625rem;
 
-    /*--- Background - bläulich  ---*/
+    /* Background / Text */
     --background: oklch(0.985 0.014 195);
     --foreground: oklch(0.18 0.015 255);
 
-    /* Primär (Buttons, Fokus) - petrol light */
-    --primary: oklch(0.66 0.12 195);
-    --primary-foreground: oklch(0.99 0.01 150);
-
-    /* Sekundär (Cards, Secondary Buttons) */
-    --secondary: oklch(0.955 0.012 195);
-    --secondary-foreground: oklch(0.22 0.02 255);
-
-    /* Akzent (Badges, Hover, Highlights) - helleres petrol light */
-    --accent: oklch(0.93 0.035 205);
-    --accent-warm: oklch(0.82 0.12 90);
-    --accent-foreground: oklch(0.22 0.02 255);
-
-    /* Neutrale Surface (Sections, Hero) */
-    --surface: oklch(0.975 0.018 195);
-    --hover: oklch(0.955 0.030 200);
-
-    /* Muted (Skeletons, Subtle Text BGs) */
-    --muted: oklch(0.965 0.01 200);
-    --muted-foreground: oklch(0.53 0.02 255);
-
-    /* Signalfarbe */
-    --destructive: oklch(0.62 0.22 25);
-
-    /* Inputs, Border, Focus ring */
-    --input: oklch(0.955 0.01 195);
-    --border: oklch(0.92 0.01 195);
-    --ring: oklch(0.70 0.12 195);
-
-    /* Cards visuell über background */
+    /* Surfaces */
     --card: oklch(0.995 0.006 195);
     --card-foreground: oklch(0.18 0.015 255);
 
-    /* Popovers visuell über background */
     --popover: oklch(0.995 0.006 195);
     --popover-foreground: oklch(0.18 0.015 255);
 
-    /* Charts / spielerische Akzente */
-    --chart-1: oklch(0.66 0.12 195); /* teal / primary */
-    --chart-2: oklch(0.72 0.10 225); /* soft sky */
-    --chart-3: oklch(0.70 0.10 300); /* soft violet */
-    --chart-4: oklch(0.82 0.12 90);  /* honey (passt zu accent-warm) */
-    --chart-5: oklch(0.72 0.14 35);  /* warm coral */
+    /* Brand */
+    --primary: oklch(0.66 0.12 195);
+    --primary-foreground: oklch(0.99 0.01 150);
 
-    /*--- Sidebar ---*/
+    /* Secondary */
+    --secondary: oklch(0.955 0.012 195);
+    --secondary-foreground: oklch(0.22 0.02 255);
+
+    /* Accent */
+    --accent: oklch(0.93 0.035 205);
+    --accent-foreground: oklch(0.22 0.02 255);
+
+    /* Optional warm accent (Badges/Highlights) */
+    --accent-warm: oklch(0.82 0.12 90);
+
+    /* Subtle surfaces (Sections / Hover) */
+    --surface: oklch(0.975 0.018 195);
+    --hover: oklch(0.955 0.030 200);
+
+    /* Muted */
+    --muted: oklch(0.965 0.01 200);
+    --muted-foreground: oklch(0.53 0.02 255);
+
+    /* Danger */
+    --destructive: oklch(0.62 0.22 25);
+
+    /* Borders / Inputs / Focus Ring */
+    --border: oklch(0.92 0.01 195);
+    --input: oklch(0.955 0.01 195);
+    --ring: oklch(0.70 0.12 195);
+
+    /* Charts */
+    --chart-1: oklch(0.66 0.12 195);
+    --chart-2: oklch(0.72 0.10 225);
+    --chart-3: oklch(0.70 0.10 300);
+    --chart-4: oklch(0.82 0.12 90);
+    --chart-5: oklch(0.72 0.14 35);
+
+    /* Sidebar */
     --sidebar: oklch(0.978 0.016 195);
     --sidebar-foreground: oklch(0.18 0.015 255);
 
@@ -129,76 +141,9 @@
     --sidebar-ring: oklch(0.66 0.12 195);
 }
 
-/* ============================================================================
-   Tokens (Dark) – Calm dark, teal pops cleanly (Alternative 1)
-   ========================================================================== */
-.dark {
-    /* Background / foreground */
-    --background: oklch(0.17 0.015 240);
-    --foreground: oklch(0.98 0.006 200);
-
-    /* Cards / Popovers (slightly above background) */
-    --card: oklch(0.22 0.018 240);
-    --card-foreground: oklch(0.98 0.006 200);
-
-    --popover: oklch(0.22 0.018 240);
-    --popover-foreground: oklch(0.98 0.006 200);
-
-    /* Primary (teal / petrol) */
-    --primary: oklch(0.72 0.11 195);
-    --primary-foreground: oklch(0.18 0.020 240);
-
-    /* Secondary / muted / accent surfaces */
-    --secondary: oklch(0.26 0.018 240);
-    --secondary-foreground: oklch(0.98 0.006 200);
-
-    --muted: oklch(0.26 0.018 240);
-    --muted-foreground: oklch(0.74 0.020 220);
-
-    --accent: oklch(0.30 0.030 210);
-    --accent-foreground: oklch(0.98 0.006 200);
-
-    /* Optional warm accent token (works great in dark too) */
-    --accent-warm: oklch(0.78 0.12 90);
-
-    /* Destructive */
-    --destructive: oklch(0.72 0.19 25);
-
-    /* Borders / inputs: subtle but visible */
-    --border: oklch(1 0 0 / 12%);
-    --input: oklch(1 0 0 / 16%);
-
-    /* Ring: tied to primary */
-    --ring: oklch(0.72 0.11 195);
-
-    /* Optional helper surfaces (if you use them) */
-    --surface: oklch(0.20 0.018 240);
-    --hover: oklch(0.28 0.028 210);
-
-    /* Charts */
-    --chart-1: oklch(0.72 0.11 195); /* teal */
-    --chart-2: oklch(0.78 0.10 225); /* sky */
-    --chart-3: oklch(0.76 0.10 300); /* violet */
-    --chart-4: oklch(0.78 0.12 90);  /* honey */
-    --chart-5: oklch(0.76 0.14 35);  /* coral */
-
-    /* Sidebar */
-    --sidebar: oklch(0.20 0.018 240);
-    --sidebar-foreground: oklch(0.98 0.006 200);
-
-    --sidebar-primary: oklch(0.72 0.11 195);
-    --sidebar-primary-foreground: oklch(0.18 0.020 240);
-
-    --sidebar-accent: oklch(0.26 0.018 240);
-    --sidebar-accent-foreground: oklch(0.98 0.006 200);
-
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.72 0.11 195);
-}
-
-/* ============================================================================
-   Base Layer (minimal, token-based)
-   ========================================================================== */
+/* =============================================================================
+   3) Base Layer (Reset + Defaults)
+   ============================================================================= */
 @layer base {
     *,
     *::before,
@@ -220,20 +165,26 @@
         min-height: 100vh;
     }
 
+    /* shadcn-like default border color */
     * {
         @apply border-border;
     }
 
+    /* Accessible focus ring (FIX: ring is already oklch(...)) */
     :focus-visible {
         outline: 2px solid var(--ring);
         outline-offset: 2px;
     }
 }
 
-/* ============================================================================
-   Components Layer (minimal, token-based)
-   ========================================================================== */
+/* =============================================================================
+   4) Components Layer
+   ============================================================================= */
 @layer components {
+    .ui-container {
+        @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+    }
+
     .ui-card {
         @apply rounded-2xl border bg-card text-card-foreground shadow-sm;
     }
@@ -244,9 +195,5 @@
 
     .ui-focus {
         @apply transition-all hover:shadow-md hover:ring-1 hover:ring-ring focus-within:ring-2 focus-within:ring-ring;
-    }
-
-    .ui-container {
-        @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
     }
 }

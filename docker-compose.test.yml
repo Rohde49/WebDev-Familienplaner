@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: familienplaner-postgres-test
+    ports:
+      - "55432:5432"
+    environment:
+      POSTGRES_DB: familienplaner_test
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test -d familienplaner_test"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
