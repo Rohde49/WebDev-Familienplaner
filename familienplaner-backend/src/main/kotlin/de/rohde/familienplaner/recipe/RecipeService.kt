@@ -6,6 +6,7 @@ import de.rohde.familienplaner.recipe.dto.RecipeResponseDto
 import de.rohde.familienplaner.recipe.dto.UpdateRecipeRequestDto
 import de.rohde.familienplaner.recipe.mapper.RecipeMapper
 import de.rohde.familienplaner.role.Role
+import de.rohde.familienplaner.user.UserRepository
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
@@ -16,7 +17,8 @@ import org.springframework.transaction.annotation.Transactional
  */
 @Service
 class RecipeService(
-    private val recipeRepository: RecipeRepository
+    private val recipeRepository: RecipeRepository,
+    private val userRepository: UserRepository
 ) {
 
     /**
@@ -47,11 +49,16 @@ class RecipeService(
         dto: CreateRecipeRequestDto,
         principal: UserDetails
     ): RecipeResponseDto {
-        val owner = principal.username
+        val user = userRepository.findByUsername(principal.username)
+            ?: throw ResourceNotFoundException("User not found")
 
-        val entity = RecipeMapper.toEntity(dto, owner)
+        val entity = RecipeMapper.toEntity(
+            dto = dto,
+            owner = user.username,
+            user = user // <<< NEU
+        )
+
         val saved = recipeRepository.save(entity)
-
         return RecipeMapper.toResponseDto(saved)
     }
 

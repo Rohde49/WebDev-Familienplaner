@@ -1,3 +1,11 @@
+/**
+ * Test starten
+ * 1. Bash-Befehl ~ docker compose -f docker-compose.test.yml up -d ~
+ * 2. Healthcheck ~ docker inspect --format='{{.State.Health.Status}}' familienplaner-postgres-test ~
+ * 3. Test-Klasse starten
+ * 4. Bash-Befehl ~ docker compose -f docker-compose.test.yml down ~
+ * 5. Bash-Befehl ~ docker rm -f familienplaner-postgres-test ~
+ */
 package de.rohde.familienplaner
 
 import de.rohde.familienplaner.recipe.RecipeRepository
@@ -33,11 +41,9 @@ class RecipeIntegrationTest(
 
     @BeforeEach
     fun setup() {
-        // Sicherstellen, dass jeder Test mit leerer DB startet
         recipeRepository.deleteAll()
         userRepository.deleteAll()
 
-        // Test-User anlegen und gültiges JWT erzeugen
         val authUtil = TestAuthUtil(
             userRepository,
             passwordEncoder,
@@ -46,7 +52,6 @@ class RecipeIntegrationTest(
         jwt = authUtil.createUserAndGetToken()
     }
 
-    // Testet, dass der RecipeController den Zugriff ohne JWT verweigert (Security-Check)
     @Test
     fun `GET recipes returns 403 without jwt`() {
         mockMvc.get("/api/recipes")
@@ -55,7 +60,6 @@ class RecipeIntegrationTest(
             }
     }
 
-    // Testet, dass der RecipeController bei gültigem JWT eine erfolgreiche Antwort liefert
     @Test
     fun `GET recipes returns 200 with valid jwt`() {
         mockMvc.get("/api/recipes") {
@@ -65,14 +69,13 @@ class RecipeIntegrationTest(
         }
     }
 
-    // Testet das Anlegen eines Rezepts über den Controller (POST) inkl. Persistenz
     @Test
     fun `POST recipes creates recipe and persists it`() {
 
         val json = """
             {
               "title": "Test-Rezept",
-              "description": "Ein Rezept aus dem Integrationstest"
+              "instruction": "Ein Rezept aus dem Integrationstest"
             }
         """.trimIndent()
 
@@ -84,21 +87,18 @@ class RecipeIntegrationTest(
             status { isCreated() }
         }
 
-        // Prüft, ob das Rezept wirklich in der Datenbank gespeichert wurde
         val recipes = recipeRepository.findAll()
         assertEquals(1, recipes.size)
         assertEquals("Test-Rezept", recipes.first().title)
     }
 
-    // Testet das Abrufen eines einzelnen Rezepts über den Controller (GET by ID)
     @Test
     fun `GET recipe by id returns recipe`() {
 
-        // Arrange: Rezept anlegen
         val json = """
             {
               "title": "Einzel-Rezept",
-              "description": "Detailansicht"
+              "instruction": "Detailansicht"
             }
         """.trimIndent()
 
@@ -112,7 +112,6 @@ class RecipeIntegrationTest(
 
         val recipeId = recipeRepository.findAll().first().id!!
 
-        // Act + Assert: Rezept über Controller abrufen
         mockMvc.get("/api/recipes/$recipeId") {
             header("Authorization", "Bearer $jwt")
         }.andExpect {
@@ -123,14 +122,13 @@ class RecipeIntegrationTest(
         }
     }
 
-    // Testet das partielle Aktualisieren eines Rezepts über den Controller (PATCH)
     @Test
     fun `PATCH recipe updates title`() {
 
         val createJson = """
             {
               "title": "Original Titel",
-              "description": "Patch-Test"
+              "instruction": "Patch-Test"
             }
         """.trimIndent()
 
@@ -159,19 +157,17 @@ class RecipeIntegrationTest(
             jsonPath("$.title") { value("Geänderter Titel") }
         }
 
-        // Prüft, ob die Änderung in der Datenbank angekommen ist
         val updated = recipeRepository.findById(recipeId).get()
         assertEquals("Geänderter Titel", updated.title)
     }
 
-    // Testet das Löschen eines Rezepts über den Controller (DELETE)
     @Test
     fun `DELETE recipe removes it`() {
 
         val json = """
             {
               "title": "Delete-Rezept",
-              "description": "Wird gelöscht"
+              "instruction": "Wird gelöscht"
             }
         """.trimIndent()
 
@@ -191,7 +187,6 @@ class RecipeIntegrationTest(
             status { isNoContent() }
         }
 
-        // Prüft, ob das Rezept wirklich aus der Datenbank entfernt wurde
         assertTrue(recipeRepository.findById(recipeId).isEmpty)
     }
 }

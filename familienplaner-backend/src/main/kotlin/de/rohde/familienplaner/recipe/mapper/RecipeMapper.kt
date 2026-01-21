@@ -4,6 +4,7 @@ import de.rohde.familienplaner.recipe.RecipeEntity
 import de.rohde.familienplaner.recipe.dto.CreateRecipeRequestDto
 import de.rohde.familienplaner.recipe.dto.RecipeResponseDto
 import de.rohde.familienplaner.recipe.dto.UpdateRecipeRequestDto
+import de.rohde.familienplaner.user.UserEntity
 import java.time.LocalDateTime
 
 object RecipeMapper {
@@ -11,10 +12,15 @@ object RecipeMapper {
     /**
      * Baut ein neues RecipeEntity basierend auf einem CreateRecipeRequestDto.
      */
-    fun toEntity(dto: CreateRecipeRequestDto, owner: String): RecipeEntity {
+    fun toEntity(
+        dto: CreateRecipeRequestDto,
+        owner: String,
+        user: UserEntity
+    ): RecipeEntity {
         return RecipeEntity(
             title = dto.title.trim(),
             owner = owner,
+            user = user,
             ingredients = dto.ingredients.map { it.trim() }.toMutableList(),
             instruction = dto.instruction.trim(),
             tags = dto.tags.toMutableSet()

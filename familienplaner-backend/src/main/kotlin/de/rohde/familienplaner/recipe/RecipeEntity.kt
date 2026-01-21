@@ -1,6 +1,7 @@
 package de.rohde.familienplaner.recipe
 
 import de.rohde.familienplaner.role.RecipeTag
+import de.rohde.familienplaner.user.UserEntity
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -18,6 +19,11 @@ class RecipeEntity(
 
     @Column(name = "owner", nullable = false, length = 64, updatable = false)
     val owner: String,
+
+    // --- Relation zu UserEntity ---
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    var user: UserEntity,
 
     // --- Optionale / erweiterbare Felder ---
     @ElementCollection
