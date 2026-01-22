@@ -1,23 +1,26 @@
 /*
  * ============================================================================
- * RecipesPage – Rezepte (UX polished, token-first)
+ * RecipesPage – Rezeptübersicht (RecipeBookShell, 2x4 Grid, UX polished)
  * ============================================================================
  */
 
 import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ChefHat, Plus, RefreshCcw, Search, ChevronLeft, ChevronRight } from "lucide-react";
 
-import { ROUTES } from "../../router/paths";
-import { useAuth } from "../../context/AuthContext";
+import { ROUTES } from "@/router/paths";
+import { useAuth } from "@/context/AuthContext";
 
-import type { Recipe } from "../../types/index.types";
-import { getAllRecipes, deleteRecipe } from "../../api/index.api";
-import { getErrorMessage, formatRecipeTag, isAdmin, uiToast } from "../../util/index.util";
+import type { Recipe } from "@/types/index.types";
+import { getAllRecipes, deleteRecipe } from "@/api/index.api";
+import { getErrorMessage, isAdmin, uiToast } from "@/util/index.util";
+
+import { RecipeBookShell } from "@/components/layout/RecipeBookShell";
+import { RecipeCard } from "@/components/ui/RecipeCard";
 
 import { Button } from "../../components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../../components/ui/card";
-import { Badge } from "../../components/ui/badge";
+import { Card, CardHeader, CardContent, CardFooter } from "../../components/ui/card";
 import {
     Dialog,
     DialogContent,
@@ -28,40 +31,40 @@ import {
 } from "../../components/ui/dialog";
 import { Skeleton } from "../../components/ui/skeleton";
 
-import { ChefHat, Plus, Pencil, Trash2, RefreshCcw } from "lucide-react";
-import { PageShell } from "../../components/layout/PageShell";
+/* ============================================================================
+ * Helpers
+ * ============================================================================
+ */
 
 const RECIPES_QUERY_KEY = ["recipes"] as const;
+const PAGE_SIZE = 8; // 2 x 4
 
 type DeleteTarget = { id: number; title: string } | null;
 
-function formatDateTime(value?: string | null): string {
-    if (!value) return "—";
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return value;
-    return new Intl.DateTimeFormat("de-DE", {
-        dateStyle: "medium",
-        timeStyle: "short",
-    }).format(d);
-}
+/* ============================================================================
+ * RecipesPage
+ * ============================================================================
+ */
 
 const RecipesPage: React.FC = () => {
+    const navigate = useNavigate();
     const queryClient = useQueryClient();
     const { user } = useAuth();
-    const navigate = useNavigate();
 
     const username = user?.username ?? null;
     const admin = user ? isAdmin(user) : false;
 
     const [deleteTarget, setDeleteTarget] = useState<DeleteTarget>(null);
 
-    // 1) Query: Liste laden
+    /* -------------------------
+     * Data
+     * ------------------------- */
+
     const recipesQuery = useQuery({
         queryKey: RECIPES_QUERY_KEY,
         queryFn: async () => (await getAllRecipes()) as Recipe[],
     });
 
-    // 2) Mutation: löschen
     const deleteMutation = useMutation({
         mutationFn: async (id: number) => {
             await deleteRecipe(id);
@@ -71,9 +74,7 @@ const RecipesPage: React.FC = () => {
             setDeleteTarget(null);
             await queryClient.invalidateQueries({ queryKey: RECIPES_QUERY_KEY });
         },
-        onError: (err) => {
-            uiToast.error(getErrorMessage(err));
-        },
+        onError: (err) => uiToast.error(getErrorMessage(err)),
     });
 
     const sortedRecipes = useMemo(() => {
@@ -85,55 +86,56 @@ const RecipesPage: React.FC = () => {
         });
     }, [recipesQuery.data]);
 
+    const visibleRecipes = sortedRecipes.slice(0, PAGE_SIZE);
+
     const canEditOrDelete = (r: Recipe) => {
         const isOwner = username && r.owner === username;
         return Boolean(admin || isOwner);
     };
 
-    const openDeleteDialog = (id: number, title: string) => setDeleteTarget({ id, title });
+    /* ============================================================================
+     * Render
+     * ============================================================================
+     */
 
     return (
-        <PageShell className="space-y-8">
-            {/* Header */}
-            <Card className="rounded-2xl border bg-card shadow-sm">
-                <CardHeader className="space-y-2">
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                        <div className="min-w-0">
-                            <div className="flex items-center gap-2">
-                                <span
-                                    className="grid h-9 w-9 place-items-center rounded-2xl border bg-muted"
-                                    aria-hidden
-                                >
-                                    <ChefHat className="h-5 w-5" />
-                                </span>
-                                <h1 className="text-2xl font-semibold tracking-tight">Rezepte</h1>
-                            </div>
-
-                            <p className="mt-2 text-sm text-muted-foreground">
-                                Deine Sammlung an Rezepten – übersichtlich, schnell bearbeitbar und später erweiterbar.
-                            </p>
-                            <p className="mt-1 text-xs text-muted-foreground">
-                                Bearbeiten/Löschen ist nur für{" "}
-                                <span className="font-medium text-foreground">Owner</span> oder{" "}
-                                <span className="font-medium text-foreground">Admin</span> möglich.
-                            </p>
-                        </div>
-
-                        <Button asChild className="shrink-0">
-                            <Link to={ROUTES.addRecipe}>
-                                <Plus className="mr-2 h-4 w-4" />
-                                Neues Rezept
-                            </Link>
-                        </Button>
+        <RecipeBookShell
+            title="Rezepte"
+            description="Deine persönliche Rezeptsammlung – ruhig, übersichtlich und jederzeit erweiterbar."
+            actions={
+                <>
+                    {/* Search (Placeholder) */}
+                    <div className="relative w-full sm:max-w-sm">
+                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        <input
+                            type="text"
+                            placeholder="Rezepte durchsuchen …"
+                            disabled
+                            className="
+                                w-full rounded-xl border
+                                bg-secondary/60
+                                pl-9 pr-3 py-2 text-sm
+                                text-muted-foreground
+                                cursor-not-allowed
+                            "
+                        />
                     </div>
-                </CardHeader>
-            </Card>
 
-            {/* Error State */}
+                    {/* Add */}
+                    <Button asChild className="shrink-0">
+                        <Link to={ROUTES.addRecipe}>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Neues Rezept
+                        </Link>
+                    </Button>
+                </>
+            }
+        >
+            {/* Error */}
             {recipesQuery.isError && (
-                <Card className="rounded-2xl border-destructive/30 bg-card">
+                <Card className="rounded-2xl border-destructive/30">
                     <CardHeader>
-                        <CardTitle className="text-base">Fehler beim Laden</CardTitle>
+                        <h3 className="font-semibold">Fehler beim Laden</h3>
                     </CardHeader>
                     <CardContent className="text-sm text-muted-foreground">
                         {getErrorMessage(recipesQuery.error)}
@@ -142,7 +144,6 @@ const RecipesPage: React.FC = () => {
                         <Button
                             variant="secondary"
                             onClick={() => recipesQuery.refetch()}
-                            disabled={recipesQuery.isFetching}
                         >
                             <RefreshCcw className="mr-2 h-4 w-4" />
                             Erneut versuchen
@@ -151,227 +152,128 @@ const RecipesPage: React.FC = () => {
                 </Card>
             )}
 
-            {/* Loading State → Skeleton Grid */}
-            {recipesQuery.isLoading ? (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {Array.from({ length: 6 }).map((_, i) => (
+            {/* Loading */}
+            {recipesQuery.isLoading && (
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    {Array.from({ length: PAGE_SIZE }).map((_, i) => (
                         <Card key={i} className="rounded-2xl">
                             <CardHeader className="space-y-3">
-                                <div className="flex items-start justify-between gap-3">
-                                    <Skeleton className="h-5 w-2/3" />
-                                    <Skeleton className="h-5 w-16 rounded-full" />
-                                </div>
-                                <Skeleton className="h-3.5 w-1/2" />
-                                <div className="flex flex-wrap gap-2">
+                                <Skeleton className="h-5 w-2/3" />
+                                <Skeleton className="h-3 w-1/3" />
+                                <div className="flex gap-2">
                                     <Skeleton className="h-5 w-14 rounded-full" />
-                                    <Skeleton className="h-5 w-16 rounded-full" />
-                                    <Skeleton className="h-5 w-12 rounded-full" />
+                                    <Skeleton className="h-5 w-20 rounded-full" />
                                 </div>
                             </CardHeader>
-
-                            <CardContent className="space-y-3">
-                                <div className="flex flex-wrap gap-2">
-                                    <Skeleton className="h-5 w-16 rounded-full" />
-                                    <Skeleton className="h-5 w-20 rounded-full" />
-                                    <Skeleton className="h-5 w-14 rounded-full" />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Skeleton className="h-4 w-full" />
-                                    <Skeleton className="h-4 w-5/6" />
-                                    <Skeleton className="h-4 w-2/3" />
-                                </div>
+                            <CardContent>
+                                <Skeleton className="h-4 w-full" />
+                                <Skeleton className="mt-2 h-4 w-5/6" />
                             </CardContent>
-
-                            <CardFooter className="flex justify-between gap-2">
-                                <Skeleton className="h-8 w-28 rounded-md" />
-                                <Skeleton className="h-8 w-24 rounded-md" />
-                            </CardFooter>
                         </Card>
                     ))}
                 </div>
-            ) : sortedRecipes.length === 0 && !recipesQuery.isError ? (
-                /* Empty State */
-                <Card className="rounded-2xl">
-                    <CardContent className="flex min-h-[calc(100vh-260px)] flex-col items-center justify-center py-16 text-center">
-                        <div className="mb-5 grid h-14 w-14 place-items-center rounded-2xl border bg-muted shadow-sm">
-                            <ChefHat className="h-6 w-6" />
-                        </div>
+            )}
 
-                        <h2 className="text-lg font-semibold">Noch keine Rezepte</h2>
-                        <p className="mt-1 max-w-md text-sm text-muted-foreground">
-                            Erstelle dein erstes Rezept – danach erscheint es hier als übersichtliche Card.
-                        </p>
-
-                        <div className="mt-6 flex items-center gap-2">
-                            <Button asChild>
+            {/* Empty */}
+            {!recipesQuery.isLoading &&
+                !recipesQuery.isError &&
+                sortedRecipes.length === 0 && (
+                    <Card className="rounded-2xl">
+                        <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+                            <div className="mb-4 grid h-14 w-14 place-items-center rounded-2xl border bg-muted">
+                                <ChefHat className="h-6 w-6" />
+                            </div>
+                            <h3 className="font-semibold">Noch keine Rezepte</h3>
+                            <p className="mt-1 text-sm text-muted-foreground">
+                                Erstelle dein erstes Rezept, um loszulegen.
+                            </p>
+                            <Button asChild className="mt-6">
                                 <Link to={ROUTES.addRecipe}>
                                     <Plus className="mr-2 h-4 w-4" />
                                     Rezept erstellen
                                 </Link>
                             </Button>
+                        </CardContent>
+                    </Card>
+                )}
 
-                            <Button variant="secondary" onClick={() => recipesQuery.refetch()}>
-                                <RefreshCcw className="mr-2 h-4 w-4" />
-                                Aktualisieren
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-            ) : (
-                /* Cards Grid */
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {sortedRecipes.map((r) => {
-                        const allowed = canEditOrDelete(r);
-                        const ingredients = r.ingredients ?? [];
-
-                        return (
-                            <Card
+            {/* Grid */}
+            {!recipesQuery.isLoading && visibleRecipes.length > 0 && (
+                <>
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        {visibleRecipes.map((r) => (
+                            <RecipeCard
                                 key={r.id}
-                                onClick={() => navigate(ROUTES.recipeDetail(r.id))}
-                                className="
-                                    group cursor-pointer rounded-2xl
-                                    transition-all
-                                    hover:shadow-md hover:ring-1 hover:ring-ring
-                                    focus-within:ring-2 focus-within:ring-ring
-                                "
-                            >
-                                {/* Header */}
-                                <CardHeader className="space-y-2">
-                                    <div className="flex items-start justify-between gap-2">
-                                        <CardTitle className="line-clamp-2 text-lg">
-                                            {r.title}
-                                        </CardTitle>
+                                recipe={r}
+                                canEdit={canEditOrDelete(r)}
+                                onOpen={(id) => navigate(ROUTES.recipeDetail(id))}
+                                onDelete={(id, title) =>
+                                    setDeleteTarget({ id, title })
+                                }
+                            />
+                        ))}
+                    </div>
 
-                                        {r.owner && (
-                                            <Badge variant="secondary" className="shrink-0">
-                                                {r.owner}
-                                            </Badge>
-                                        )}
-                                    </div>
-
-                                    <p className="text-xs text-muted-foreground">
-                                        Aktualisiert: {formatDateTime(r.updatedAt)}
-                                    </p>
-
-                                    {/* Tags */}
-                                    <div className="flex flex-wrap gap-1.5">
-                                        {(r.tags ?? []).slice(0, 4).map((t) => (
-                                            <Badge key={t} variant="outline">
-                                                {formatRecipeTag(t)}
-                                            </Badge>
-                                        ))}
-                                        {(r.tags?.length ?? 0) > 4 && (
-                                            <Badge variant="outline">
-                                                +{(r.tags?.length ?? 0) - 4}
-                                            </Badge>
-                                        )}
-                                    </div>
-                                </CardHeader>
-
-                                {/* Content */}
-                                <CardContent className="space-y-3 text-sm">
-                                    {/* Zutaten */}
-                                    {ingredients.length > 0 ? (
-                                        <div className="flex flex-wrap gap-1.5">
-                                            {ingredients.slice(0, 3).map((i) => (
-                                                <Badge key={i} variant="secondary">
-                                                    {i}
-                                                </Badge>
-                                            ))}
-                                            {ingredients.length > 3 && (
-                                                <Badge variant="secondary">
-                                                    +{ingredients.length - 3}
-                                                </Badge>
-                                            )}
-                                        </div>
-                                    ) : (
-                                        <p className="text-muted-foreground">
-                                            Keine Zutaten hinterlegt
-                                        </p>
-                                    )}
-
-                                    {/* Anleitung */}
-                                    {r.instruction && (
-                                        <p className="line-clamp-3 text-muted-foreground leading-relaxed">
-                                            {r.instruction}
-                                        </p>
-                                    )}
-                                </CardContent>
-
-                                {/* Actions */}
-                                <CardFooter
-                                    className="
-                                        flex justify-between gap-2
-                                        sm:opacity-0 sm:group-hover:opacity-100
-                                        transition-opacity
-                                      "
-                                    onClick={(e) => e.stopPropagation()}
-                                >
-                                    <Button
-                                        asChild
-                                        variant="secondary"
-                                        size="sm"
-                                        disabled={!allowed}
-                                    >
-                                        <Link to={ROUTES.recipeEdit(r.id)}>
-                                            <Pencil className="mr-1 h-4 w-4" />
-                                            Bearbeiten
-                                        </Link>
-                                    </Button>
-
-                                    <Button
-                                        variant="destructive"
-                                        size="sm"
-                                        disabled={!allowed}
-                                        onClick={() => openDeleteDialog(r.id, r.title)}
-                                    >
-                                        <Trash2 className="mr-1 h-4 w-4" />
-                                        Löschen
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        );
-                    })}
-                </div>
+                    {/* Pagination (Placeholder) */}
+                    <footer className="flex items-center justify-center gap-4 pt-8">
+                        <Button variant="secondary" size="sm" disabled>
+                            <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        <span className="text-sm text-muted-foreground">
+                            Seite 1 von 1
+                        </span>
+                        <Button variant="secondary" size="sm" disabled>
+                            <ChevronRight className="h-4 w-4" />
+                        </Button>
+                    </footer>
+                </>
             )}
 
-            {/* Delete Confirm Dialog */}
-            <Dialog open={Boolean(deleteTarget)} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+            {/* Delete Dialog */}
+            <Dialog
+                open={Boolean(deleteTarget)}
+                onOpenChange={(open) => !open && setDeleteTarget(null)}
+            >
                 <DialogContent className="rounded-2xl">
                     <DialogHeader>
                         <DialogTitle>Rezept löschen?</DialogTitle>
                         <DialogDescription>
-                            {deleteTarget ? (
+                            {deleteTarget && (
                                 <>
-                                    Willst du <span className="font-medium">„{deleteTarget.title}“</span> wirklich
-                                    löschen? Diese Aktion kann nicht rückgängig gemacht werden.
+                                    Willst du{" "}
+                                    <span className="font-medium">
+                                        „{deleteTarget.title}“
+                                    </span>{" "}
+                                    wirklich löschen? Diese Aktion kann nicht
+                                    rückgängig gemacht werden.
                                 </>
-                            ) : null}
+                            )}
                         </DialogDescription>
                     </DialogHeader>
 
-                    <DialogFooter className="gap-2 sm:gap-0">
+                    <DialogFooter>
                         <Button
-                            type="button"
                             variant="secondary"
                             onClick={() => setDeleteTarget(null)}
-                            disabled={deleteMutation.isPending}
                         >
                             Abbrechen
                         </Button>
                         <Button
-                            type="button"
                             variant="destructive"
-                            onClick={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
-                            disabled={!deleteTarget || deleteMutation.isPending}
+                            onClick={() =>
+                                deleteTarget &&
+                                deleteMutation.mutate(deleteTarget.id)
+                            }
+                            disabled={deleteMutation.isPending}
                         >
-                            {deleteMutation.isPending ? "Löschen…" : "Löschen"}
+                            {deleteMutation.isPending
+                                ? "Löschen…"
+                                : "Löschen"}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </PageShell>
+        </RecipeBookShell>
     );
 };
 

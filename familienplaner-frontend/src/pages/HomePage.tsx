@@ -1,261 +1,147 @@
-import React, { useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import { CloudSun, MapPin, CalendarClock } from "lucide-react";
 
-import { ROUTES } from "../router/paths";
 import { useAuth } from "../context/AuthContext";
-import { getDisplayName, isAdmin } from "../util/index.util";
-import { PageShell } from "../components/layout/PageShell";
+import { getDisplayName } from "../util/index.util";
+import { getTodayWeather, type WeatherData } from "../util/weather.util";
 
-type QuickAction = {
-    title: string;
-    description: string;
-    cta: string;
-    onClick: () => void;
-    variant?: "primary" | "secondary" | "ghost";
-};
+import { HomeCardShell } from "../components/layout/HomeCardShell";
+
+/* ============================================================================
+ * HomePage
+ * ============================================================================
+ */
 
 const HomePage: React.FC = () => {
-    const navigate = useNavigate();
     const { user, isAuthenticated } = useAuth();
-
     const displayName = useMemo(() => getDisplayName(user), [user]);
-    const admin = useMemo(() => isAdmin(user), [user]);
 
-    const actions: QuickAction[] = useMemo(() => {
-        if (!isAuthenticated) {
-            return [
-                {
-                    title: "Anmelden",
-                    description: "Starte dort, wo du zuletzt aufgehört hast.",
-                    cta: "Anmelden",
-                    onClick: () => navigate(ROUTES.login),
-                    variant: "primary",
-                },
-                {
-                    title: "Konto erstellen",
-                    description: "In 1 Minute startklar – familienfreundlich & einfach.",
-                    cta: "Registrieren",
-                    onClick: () => navigate(ROUTES.register),
-                    variant: "secondary",
-                },
-            ];
-        }
+    const [weather, setWeather] = useState<WeatherData | null>(null);
+    const [weatherError, setWeatherError] = useState<string | null>(null);
 
-        const list: QuickAction[] = [
-            {
-                title: "Profil",
-                description: "Deine Daten & Einstellungen verwalten.",
-                cta: "Zum Profil",
-                onClick: () => navigate(ROUTES.profile),
-                variant: "primary",
-            },
-            {
-                title: "Rezepte",
-                description: "Schnell etwas finden oder neue Ideen speichern.",
-                cta: "Zu den Rezepten",
-                onClick: () => navigate(ROUTES.recipes),
-                variant: "primary",
-            },
-        ];
+    useEffect(() => {
+        let alive = true;
 
-        if (admin) {
-            list.push({
-                title: "Admin",
-                description: "Systemstatus, Nutzer & Verwaltung.",
-                cta: "Admin öffnen",
-                onClick: () => navigate(ROUTES.admin),
-                variant: "ghost",
-            });
-        }
+        (async () => {
+            try {
+                const data = await getTodayWeather();
+                if (!alive) return;
+                setWeather(data);
+            } catch {
+                if (!alive) return;
+                setWeatherError("Wetterdaten nicht verfügbar");
+            }
+        })();
 
-        return list;
-    }, [admin, isAuthenticated, navigate]);
+        return () => {
+            alive = false;
+        };
+    }, []);
 
-    const headline = isAuthenticated ? `Hallo, ${displayName}!` : "Willkommen im Familienplaner";
+    const headline = isAuthenticated
+        ? `Hallo, ${displayName} 👋`
+        : "Willkommen im Familienplaner";
+
     const subline = isAuthenticated
-        ? "Schön, dass du da bist. Hab einen schönen Tag und schätze deine Zeit."
-        : "Organisiere euren Alltag – ruhig, modern und angenehm einfach für die ganze Familie.";
+        ? "Schön, dass du da bist. Hier ein ruhiger Überblick für heute."
+        : "Ein ruhiger Ort, um den Familienalltag entspannt zu organisieren.";
 
     return (
-        <PageShell className="space-y-10">
-            {/* HERO */}
-            <section className="ui-card overflow-hidden">
-                <div className="p-6 sm:p-8">
-                    <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-                        <div className="space-y-4">
-                            <div className="space-y-2">
-                                <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                                    {headline}
-                                </h1>
-                                <p className="max-w-2xl text-base text-muted-foreground sm:text-lg">
-                                    {subline}
-                                </p>
-                            </div>
+        <HomeCardShell>
+            <div className="space-y-8">
+                {/* Header */}
+                <header className="space-y-2">
+                    <h1 className="text-2xl font-semibold tracking-tight">
+                        {headline}
+                    </h1>
+                    <p className="text-sm text-muted-foreground">
+                        {subline}
+                    </p>
+                </header>
 
-                            {/* CTAs */}
-                            <div className="flex flex-wrap gap-3 pt-2">
-                                {!isAuthenticated ? (
-                                    <>
-                                        <button
-                                            type="button"
-                                            className="ui-focus inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition hover:brightness-95 active:brightness-90"
-                                            onClick={() => navigate(ROUTES.login)}
-                                        >
-                                            Anmelden
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="ui-focus inline-flex items-center justify-center rounded-xl border bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground shadow-sm transition hover:bg-accent active:brightness-95"
-                                            onClick={() => navigate(ROUTES.register)}
-                                        >
-                                            Registrieren
-                                        </button>
-                                    </>
+                <hr className="border-border" />
+
+                {/* Weather */}
+                <section className="space-y-3">
+                    <div className="flex items-center gap-2">
+                        <CloudSun className="h-5 w-5 text-primary" />
+                        <h2 className="text-lg font-semibold tracking-tight">
+                            Wetter heute
+                        </h2>
+                    </div>
+
+                    <div className="rounded-2xl border bg-muted p-4">
+                        <div className="flex items-center justify-between">
+                            <div className="space-y-1">
+                                <div className="flex items-center gap-2 text-sm font-medium">
+                                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                                    <span>Forst (Lausitz)</span>
+                                </div>
+
+                                {weather ? (
+                                    <p className="text-sm text-muted-foreground capitalize">
+                                        {weather.description}
+                                    </p>
                                 ) : (
-                                    <>
-                                        <button
-                                            type="button"
-                                            className="ui-focus inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition hover:brightness-95 active:brightness-90"
-                                            onClick={() => navigate(ROUTES.profile)}
-                                        >
-                                            Zum Profil
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="ui-focus inline-flex items-center justify-center rounded-xl border bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground shadow-sm transition hover:brightness-95 active:brightness-90"
-                                            onClick={() => navigate(ROUTES.recipes)}
-                                        >
-                                            Rezepte
-                                        </button>
-
-                                        {admin && (
-                                            <button
-                                                type="button"
-                                                className="ui-focus inline-flex items-center justify-center rounded-xl border bg-destructive px-4 py-2 text-sm font-medium text-foreground shadow-sm transition hover:brightness-95 active:brightness-90"
-                                                onClick={() => navigate(ROUTES.admin)}
-                                            >
-                                                Admin
-                                            </button>
-                                        )}
-                                    </>
+                                    <p className="text-sm text-muted-foreground">
+                                        {weatherError ?? "Wetter wird geladen…"}
+                                    </p>
                                 )}
                             </div>
-                        </div>
 
-                        {/* Right side */}
-                        <div className="w-full max-w-md">
-                            <div className="rounded-2xl border bg-muted p-5 text-sm text-muted-foreground">
-                                <div className="flex items-center justify-between">
-                                    <span className="font-medium text-foreground">Heute schnell starten</span>
-                                    <span aria-hidden>✨</span>
-                                </div>
+                            <div className="flex items-center gap-3">
+                                {weather && (
+                                    <img
+                                        src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`}
+                                        alt={weather.description}
+                                        className="h-10 w-10"
+                                    />
+                                )}
 
-                                <ul className="mt-3 space-y-2">
-                                    <li className="flex gap-2">
-                                        <span aria-hidden>•</span>
-                                        <span>Nutze Schnellzugriffe statt Suchen.</span>
-                                    </li>
-                                    <li className="flex gap-2">
-                                        <span aria-hidden>•</span>
-                                        <span>Rezepte sind perfekt für Einkaufs- & Essensplanung.</span>
-                                    </li>
-                                    <li className="flex gap-2">
-                                        <span aria-hidden>•</span>
-                                        <span>Später: Aufgaben & weitere Module – Schritt für Schritt.</span>
-                                    </li>
-                                </ul>
+                                <p className="text-2xl font-semibold text-foreground">
+                                    {weather ? `${weather.temperature}°C` : "--°C"}
+                                </p>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            {/* QUICK ACTIONS */}
-            <section className="space-y-4">
-                <div className="flex items-end justify-between gap-4">
-                    <div>
-                        <h2 className="text-xl font-semibold tracking-tight">
-                            {isAuthenticated ? "Schnellzugriffe" : "Schnell starten"}
+                <hr className="border-border" />
+
+                {/* Outlook */}
+                <section className="space-y-3">
+                    <div className="flex items-center gap-2">
+                        <CalendarClock className="h-5 w-5 text-primary" />
+                        <h2 className="text-lg font-semibold tracking-tight">
+                            Ausblick
                         </h2>
-                        <p className="text-sm text-muted-foreground">
-                            {isAuthenticated
-                                ? "Alles Wichtige mit einem Klick."
-                                : "Erstelle ein Konto oder melde dich an, um loszulegen."}
-                        </p>
-                    </div>
-                </div>
-
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {actions.map((a) => (
-                        <button
-                            key={a.title}
-                            type="button"
-                            onClick={a.onClick}
-                            className={[
-                                "ui-card ui-card-hover ui-focus text-left",
-                                "p-5",
-                            ].join(" ")}
-                        >
-                            <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="text-base font-semibold">{a.title}</h3>
-                                    <span className="text-muted-foreground" aria-hidden>
-                                        →
-                                    </span>
-                                </div>
-                                <p className="text-sm text-muted-foreground">{a.description}</p>
-
-                                <div className="pt-2">
-                                    <span
-                                        className={[
-                                            "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium",
-                                            a.variant === "primary"
-                                                ? "bg-primary text-primary-foreground"
-                                                : a.variant === "secondary"
-                                                    ? "bg-secondary text-secondary-foreground"
-                                                    : "bg-accent text-accent-foreground",
-                                        ].join(" ")}
-                                    >
-                                        {a.cta}
-                                    </span>
-                                </div>
-                            </div>
-                        </button>
-                    ))}
-                </div>
-            </section>
-
-            {/* FEATURES */}
-            <section className="space-y-4">
-                <h2 className="text-xl font-semibold tracking-tight">Warum das gut funktioniert</h2>
-
-                <div className="grid gap-4 md:grid-cols-3">
-                    <div className="ui-card p-5">
-                        <div className="text-2xl" aria-hidden>🧘</div>
-                        <h3 className="mt-2 font-semibold">Ruhig & übersichtlich</h3>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Weniger Ablenkung, klarer Fokus – so bleibt Planung entspannt.
-                        </p>
                     </div>
 
-                    <div className="ui-card p-5">
-                        <div className="text-2xl" aria-hidden>⚡</div>
-                        <h3 className="mt-2 font-semibold">Schnell im Alltag</h3>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Häufige Aktionen sind sofort erreichbar – ohne Umwege.
-                        </p>
-                    </div>
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        <div className="rounded-2xl border bg-muted p-4 text-sm">
+                            <p className="font-medium">Finanzen</p>
+                            <p className="mt-1 text-muted-foreground">
+                                Einnahmen & regelmäßige Ausgaben im Blick behalten.
+                            </p>
+                        </div>
 
-                    <div className="ui-card p-5">
-                        <div className="text-2xl" aria-hidden>👨‍👩‍👧‍👦</div>
-                        <h3 className="mt-2 font-semibold">Für die ganze Familie</h3>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Freundliches Design, klare Sprache, angenehm auf Handy & Desktop.
-                        </p>
+                        <div className="rounded-2xl border bg-muted p-4 text-sm">
+                            <p className="font-medium">Aufgaben & Planung</p>
+                            <p className="mt-1 text-muted-foreground">
+                                Gemeinsame To-Dos für den Familienalltag.
+                            </p>
+                        </div>
+
+                        <div className="rounded-2xl border bg-muted p-4 text-sm">
+                            <p className="font-medium">Familienübersicht</p>
+                            <p className="mt-1 text-muted-foreground">
+                                Alles Wichtige an einem Ort – Schritt für Schritt.
+                            </p>
+                        </div>
                     </div>
-                </div>
-            </section>
-        </PageShell>
+                </section>
+            </div>
+        </HomeCardShell>
     );
 };
 
