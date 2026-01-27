@@ -1,6 +1,6 @@
 /*
  * ============================================================================
- * RecipesPage – Rezeptübersicht (Search + Sort + RecipeBookShell)
+ * RecipesPage – Rezeptübersicht
  * ============================================================================
  */
 
@@ -34,8 +34,8 @@ import {
 
 import { RecipeBookShell } from "@/components/layout/RecipeBookShell";
 import { RecipeCard } from "@/components/ui/RecipeCard";
-import { Button } from "@/components/ui/Button.tsx";
-import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/Button";
+import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/Card";
 import {
     Dialog,
     DialogContent,
@@ -43,8 +43,8 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "@/components/ui/dialog";
-import { Skeleton } from "@/components/ui/Skeleton.tsx";
+} from "@/components/ui/Dialog";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 /* ============================================================================
  * Config
@@ -52,12 +52,12 @@ import { Skeleton } from "@/components/ui/Skeleton.tsx";
  */
 
 const RECIPES_QUERY_KEY = ["recipes"] as const;
-const PAGE_SIZE = 8; // 2 x 4
+const PAGE_SIZE = 8;
 
 type DeleteTarget = { id: number; title: string } | null;
 
 /* ============================================================================
- * RecipesPage
+ * Page
  * ============================================================================
  */
 
@@ -132,8 +132,8 @@ const RecipesPage: React.FC = () => {
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Rezepte durchsuchen …"
                             className="
-                                w-full rounded-xl border
-                                bg-secondary/60
+                                w-full rounded-xl border border-border
+                                bg-muted/60
                                 pl-9 pr-3 py-2 text-sm
                                 text-foreground
                                 placeholder:text-muted-foreground
@@ -148,19 +148,14 @@ const RecipesPage: React.FC = () => {
                             setSortMode(e.target.value as RecipeSortMode)
                         }
                         className="
-                            rounded-xl border bg-secondary/60
+                            rounded-xl border border-border
+                            bg-muted/60
                             px-3 py-2 text-sm
                         "
                     >
-                        <option value="TITLE_ASC">
-                            Titel (A-Z)
-                        </option>
-                        <option value="TITLE_DESC">
-                            Titel (Z-A)
-                        </option>
-                        <option value="OWNER_ASC">
-                            Besitzer (A–Z)
-                        </option>
+                        <option value="TITLE_ASC">Titel (A–Z)</option>
+                        <option value="TITLE_DESC">Titel (Z–A)</option>
+                        <option value="OWNER_ASC">Besitzer (A–Z)</option>
                     </select>
 
                     {/* Add */}
@@ -290,8 +285,9 @@ const RecipesPage: React.FC = () => {
                                 deleteTarget &&
                                 deleteMutation.mutate(deleteTarget.id)
                             }
+                            disabled={deleteMutation.isPending}
                         >
-                            Löschen
+                            {deleteMutation.isPending ? "Löschen…" : "Löschen"}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

@@ -1,21 +1,30 @@
 import React, { useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { Menu, LogOut, User, Home, ChefHat, Shield, LogIn, UserPlus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import {
+    Menu,
+    LogOut,
+    User,
+    Home,
+    ChefHat,
+    Shield,
+    LogIn,
+    UserPlus,
+} from "lucide-react";
 
 import { ROUTES } from "@/router/paths";
 import { useAuth } from "@/context/AuthContext";
 import { getDisplayName, isAdmin } from "@/util/index.util";
 
 import { Button } from "@/components/ui/Button";
-import { NavItem } from "@/components/ui/NavItem";
+import { NavItem } from "@/components/navigation/NavItem";
 import {
     Sheet,
     SheetContent,
     SheetHeader,
     SheetTitle,
     SheetTrigger,
-} from "@/components/ui/sheet";
-import { Separator } from "@/components/ui/separator";
+} from "@/components/ui/Sheet";
+import { Separator } from "@/components/ui/Separator";
 
 /* ============================================================================
  * Types
@@ -26,7 +35,6 @@ type Item = {
     label: string;
     to: string;
     icon: React.ReactNode;
-    matchPrefix?: boolean;
 };
 
 /* ============================================================================
@@ -36,7 +44,6 @@ type Item = {
 
 const NavBar: React.FC = () => {
     const navigate = useNavigate();
-    const location = useLocation();
     const { user, isAuthenticated, logout } = useAuth();
 
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -51,7 +58,7 @@ const NavBar: React.FC = () => {
     };
 
     /* -------------------------
-     * Item definitions
+     * Navigation items
      * ------------------------- */
 
     const publicItems: Item[] = [
@@ -68,7 +75,6 @@ const NavBar: React.FC = () => {
                 label: "Rezepte",
                 to: ROUTES.recipes,
                 icon: <ChefHat className="h-4 w-4" />,
-                matchPrefix: true,
             },
             ...(showAdmin
                 ? [
@@ -76,7 +82,6 @@ const NavBar: React.FC = () => {
                         label: "Admin",
                         to: ROUTES.admin,
                         icon: <Shield className="h-4 w-4" />,
-                        matchPrefix: true,
                     },
                 ]
                 : []),
@@ -84,7 +89,6 @@ const NavBar: React.FC = () => {
                 label: displayName || "Profil",
                 to: ROUTES.profile,
                 icon: <User className="h-4 w-4" />,
-                matchPrefix: true,
             },
         ]
         : [
@@ -102,23 +106,6 @@ const NavBar: React.FC = () => {
 
     const items = [...publicItems, ...authItems];
 
-    /* -------------------------
-     * Active helper
-     * ------------------------- */
-
-    const isActive = (item: Item) => {
-        if (item.to === ROUTES.home) {
-            return location.pathname === ROUTES.home;
-        }
-        if (item.matchPrefix) {
-            return (
-                location.pathname === item.to ||
-                location.pathname.startsWith(item.to + "/")
-            );
-        }
-        return location.pathname === item.to;
-    };
-
     /* ============================================================================
      * Render
      * ============================================================================
@@ -126,23 +113,25 @@ const NavBar: React.FC = () => {
 
     return (
         <nav className="sticky top-0 z-40 w-full border-b bg-background/90 backdrop-blur">
-            <div className="ui-container flex items-center justify-between py-3">
+            <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
                 {/* Brand */}
                 <button
                     type="button"
                     onClick={() => navigate(ROUTES.home)}
                     className="
-                        ui-focus inline-flex items-center gap-2
-                        rounded-xl px-3 py-2
+                        inline-flex items-center gap-2 rounded-lg px-3 py-2
                         text-lg font-semibold tracking-tight
-                        hover:bg-accent
+                        transition-colors
+                        hover:bg-muted
+                        focus-visible:outline-none
+                        focus-visible:ring-2 focus-visible:ring-ring
                     "
                 >
                     <span aria-hidden>👨‍👩‍👧‍👦</span>
                     Familienplaner
                 </button>
 
-                {/* Desktop */}
+                {/* Desktop navigation */}
                 <div className="hidden items-center gap-2 sm:flex">
                     {items.map((item) => (
                         <NavItem
@@ -150,7 +139,6 @@ const NavBar: React.FC = () => {
                             to={item.to}
                             label={item.label}
                             icon={item.icon}
-                            active={isActive(item)}
                         />
                     ))}
 
@@ -166,7 +154,7 @@ const NavBar: React.FC = () => {
                     )}
                 </div>
 
-                {/* Mobile */}
+                {/* Mobile navigation */}
                 <div className="sm:hidden">
                     <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
                         <SheetTrigger asChild>
@@ -194,9 +182,10 @@ const NavBar: React.FC = () => {
                                         to={item.to}
                                         label={item.label}
                                         icon={item.icon}
-                                        active={isActive(item)}
                                         mobile
-                                        onClick={() => setMobileOpen(false)}
+                                        onClick={() =>
+                                            setMobileOpen(false)
+                                        }
                                     />
                                 ))}
 

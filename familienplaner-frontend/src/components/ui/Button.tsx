@@ -1,6 +1,6 @@
 /*
  * ============================================================================
- * zentrale UI Button-Komponente
+ * Zentrale UI Button-Komponente
  * ============================================================================
  */
 
@@ -32,8 +32,9 @@ export interface ButtonProps
  */
 
 const base =
-    "ui-focus inline-flex items-center justify-center gap-2 " +
-    "rounded-xl font-medium transition-colors " +
+    "inline-flex items-center justify-center gap-2 " +
+    "rounded-lg font-medium transition-colors " +
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring " +
     "disabled:cursor-not-allowed disabled:opacity-60";
 
 const variants: Record<ButtonVariant, string> = {
@@ -42,8 +43,8 @@ const variants: Record<ButtonVariant, string> = {
         "hover:brightness-95 active:brightness-90",
 
     secondary:
-        "border bg-secondary text-secondary-foreground shadow-sm " +
-        "hover:bg-accent active:brightness-95",
+        "border border-border bg-secondary text-secondary-foreground shadow-sm " +
+        "hover:brightness-97 active:brightness-95",
 
     destructive:
         "bg-destructive text-destructive-foreground shadow-sm " +
@@ -51,7 +52,7 @@ const variants: Record<ButtonVariant, string> = {
 
     ghost:
         "bg-transparent text-foreground " +
-        "hover:bg-accent",
+        "hover:bg-muted",
 };
 
 const sizes: Record<ButtonSize, string> = {

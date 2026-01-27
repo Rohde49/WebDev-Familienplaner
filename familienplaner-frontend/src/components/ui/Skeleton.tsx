@@ -1,6 +1,6 @@
 /*
  * ============================================================================
- * Skeleton – UI Platzhalter für Ladezustände
+ * Skeleton – UI Platzhalter für Ladezustände (Platzhalter beim Laden)
  * ============================================================================
  */
 
@@ -18,7 +18,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
         <div
             aria-hidden
             className={cn(
-                "animate-pulse rounded-md bg-muted",
+                "animate-pulse rounded-lg bg-muted",
                 className
             )}
             {...props}

@@ -1,28 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-import { ROUTES } from "../../router/paths";
-import { useAuth } from "../../context/AuthContext";
-
-import type { Recipe } from "../../types/index.types";
-import { deleteRecipe, getRecipeById } from "../../api/index.api";
-import { formatRecipeTag, getErrorMessage, isAdmin, uiToast } from "../../util/index.util";
-
-import { RecipeFormShell } from "../../components/layout/RecipeFormShell";
-import { Alert } from "../../components/ui/Alert";
-import { Badge } from "../../components/ui/Badge.tsx";
-import { Button } from "../../components/ui/Button.tsx";
-import { Skeleton } from "../../components/ui/Skeleton.tsx";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "../../components/ui/dialog";
-
 import {
     ArrowLeft,
     Pencil,
@@ -32,28 +10,56 @@ import {
     AlignLeft,
 } from "lucide-react";
 
+import { ROUTES } from "@/router/paths";
+import { useAuth } from "@/context/AuthContext";
+
+import type { Recipe } from "@/types/index.types";
+import { deleteRecipe, getRecipeById } from "@/api/index.api";
+
+import {
+    formatRecipeTag,
+    formatDateTime,
+    getErrorMessage,
+    isAdmin,
+    uiToast,
+} from "@/util/index.util";
+
+import { RecipeFormShell } from "@/components/layout/RecipeFormShell";
+import { Alert } from "@/components/ui/Alert";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { Skeleton } from "@/components/ui/Skeleton";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/Dialog";
+
+/* ============================================================================
+ * Constants
+ * ============================================================================
+ */
+
 const RECIPES_QUERY_KEY = ["recipes"] as const;
 
-function formatDateTime(value?: string | null): string {
-    if (!value) return "—";
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return value;
-    return new Intl.DateTimeFormat("de-DE", {
-        dateStyle: "medium",
-        timeStyle: "short",
-    }).format(d);
-}
+/* ============================================================================
+ * Page
+ * ============================================================================
+ */
 
 const DetailRecipePage: React.FC = () => {
     const { id } = useParams();
     const recipeId = Number(id);
 
     const { user } = useAuth();
-    const admin = user ? isAdmin(user) : false;
-    const username = user?.username ?? null;
-
     const navigate = useNavigate();
     const queryClient = useQueryClient();
+
+    const admin = user ? isAdmin(user) : false;
+    const username = user?.username ?? null;
 
     const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -85,7 +91,10 @@ const DetailRecipePage: React.FC = () => {
         onError: (err) => uiToast.error(getErrorMessage(err)),
     });
 
-    /* ---------- Invalid ID ---------- */
+    /* =========================================================================
+     * Invalid ID
+     * ========================================================================= */
+
     if (!Number.isFinite(recipeId) || recipeId <= 0) {
         return (
             <RecipeFormShell
@@ -107,7 +116,10 @@ const DetailRecipePage: React.FC = () => {
         );
     }
 
-    /* ---------- Loading ---------- */
+    /* =========================================================================
+     * Loading
+     * ========================================================================= */
+
     if (recipeQuery.isLoading) {
         return (
             <RecipeFormShell title="Rezept wird geladen…">
@@ -120,7 +132,10 @@ const DetailRecipePage: React.FC = () => {
         );
     }
 
-    /* ---------- Error ---------- */
+    /* =========================================================================
+     * Error
+     * ========================================================================= */
+
     if (recipeQuery.isError) {
         return (
             <RecipeFormShell
@@ -143,7 +158,10 @@ const DetailRecipePage: React.FC = () => {
         );
     }
 
-    /* ---------- Not found ---------- */
+    /* =========================================================================
+     * Not found
+     * ========================================================================= */
+
     if (!recipe) {
         return (
             <RecipeFormShell
@@ -164,34 +182,43 @@ const DetailRecipePage: React.FC = () => {
         );
     }
 
-    /* ---------- Content ---------- */
+    /* =========================================================================
+     * Content
+     * ========================================================================= */
+
     return (
         <>
             <RecipeFormShell
                 title={recipe.title}
                 subtitle={
                     <>
-                        Owner:{" "}
+                        <span className="text-muted-foreground">Owner:</span>{" "}
                         <span className="font-medium text-foreground">
                             {recipe.owner ?? "—"}
+                        </span>
+                        {" · "}
+                        <span className="text-muted-foreground">
+                            Aktualisiert:
                         </span>{" "}
-                        · Aktualisiert:{" "}
                         <span className="font-medium text-foreground">
                             {formatDateTime(recipe.updatedAt)}
                         </span>
-                        <span className="block text-xs text-muted-foreground mt-1">
-                            Bearbeiten/Löschen nur für Owner oder Admin.
+
+                        <span className="mt-1 block text-xs text-muted-foreground">
+                            Bearbeiten und Löschen nur für Owner oder Admin.
                         </span>
                     </>
                 }
                 tags={
-                    (recipe.tags ?? []).length > 0
-                        ? recipe.tags.map((t) => (
+                    (recipe.tags ?? []).length > 0 ? (
+                        recipe.tags.map((t) => (
                             <Badge key={t} variant="outline">
                                 {formatRecipeTag(t)}
                             </Badge>
                         ))
-                        : <Badge variant="secondary">Keine Tags</Badge>
+                    ) : (
+                        <Badge variant="secondary">Keine Tags</Badge>
+                    )
                 }
                 actions={
                     <>
@@ -256,7 +283,7 @@ const DetailRecipePage: React.FC = () => {
                     </div>
 
                     {recipe.instruction ? (
-                        <div className="rounded-2xl border bg-background p-4">
+                        <div className="rounded-2xl border bg-muted p-4">
                             <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
                                 {recipe.instruction}
                             </p>
@@ -297,7 +324,9 @@ const DetailRecipePage: React.FC = () => {
                             onClick={() => deleteMutation.mutate()}
                             disabled={deleteMutation.isPending}
                         >
-                            {deleteMutation.isPending ? "Löschen…" : "Löschen"}
+                            {deleteMutation.isPending
+                                ? "Löschen…"
+                                : "Löschen"}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

@@ -1,6 +1,6 @@
 /*
  * ============================================================================
- * Select – zentrale UI Select-Komponente
+ * Select – zentrale UI Select-Komponente (Auswahl vordefinierter Optionen)
  * ============================================================================
  */
 
@@ -26,8 +26,9 @@ export interface SelectProps
  */
 
 const selectBase =
-    "ui-focus w-full appearance-none rounded-xl border bg-input px-3 py-2 pr-9 " +
-    "text-sm text-foreground shadow-sm transition-colors " +
+    "w-full appearance-none rounded-lg border border-border bg-background " +
+    "px-3 py-2 pr-9 text-sm text-foreground shadow-sm transition-colors " +
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring " +
     "disabled:cursor-not-allowed disabled:opacity-60";
 
 const selectError =
@@ -64,6 +65,7 @@ export const Select = React.forwardRef<
     ref
 ) {
     const selectId = id ?? React.useId();
+    const hasError = Boolean(error);
 
     return (
         <div className="space-y-1.5">
@@ -81,9 +83,10 @@ export const Select = React.forwardRef<
                     ref={ref}
                     id={selectId}
                     disabled={disabled}
+                    aria-invalid={hasError}
                     className={cn(
                         selectBase,
-                        error && selectError,
+                        hasError && selectError,
                         className
                     )}
                     {...props}
@@ -95,7 +98,7 @@ export const Select = React.forwardRef<
                     ))}
                 </select>
 
-                {/* Dropdown Arrow */}
+                {/* Dropdown indicator */}
                 <span
                     aria-hidden
                     className="
@@ -107,7 +110,7 @@ export const Select = React.forwardRef<
                 </span>
             </div>
 
-            {error ? (
+            {hasError ? (
                 <p className={errorBase}>{error}</p>
             ) : hint ? (
                 <p className={hintBase}>{hint}</p>

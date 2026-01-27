@@ -1,16 +1,23 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Save, List, AlignLeft, Tag } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query"; // NEW
 
-import { ROUTES } from "../../router/paths";
-import { getRecipeById, updateRecipe } from "../../api/index.api";
-import type { Recipe, RecipeTag, UpdateRecipeRequestDto } from "../../types/index.types";
-import { getErrorMessage } from "../../util/index.util";
+import { ROUTES } from "@/router/paths";
+import { getRecipeById, updateRecipe } from "@/api/index.api";
+import type {
+    Recipe,
+    RecipeTag,
+    UpdateRecipeRequestDto,
+} from "@/types/index.types";
+import { getErrorMessage } from "@/util/index.util";
 
-import { RecipeFormShell } from "../../components/layout/RecipeFormShell";
-import { Alert } from "../../components/ui/Alert";
-import { Button } from "../../components/ui/Button.tsx";
-import { Badge } from "../../components/ui/Badge.tsx";
+import { RecipeFormShell } from "@/components/layout/RecipeFormShell";
+import { Alert } from "@/components/ui/Alert";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 
 /* ============================================================================
  * Constants
@@ -26,20 +33,18 @@ const TAG_OPTIONS: { value: RecipeTag; label: string }[] = [
     { value: "WEIHNACHTEN", label: "Weihnachten" },
 ];
 
-const inputBase =
-    "ui-focus w-full rounded-xl border bg-input px-3 py-2 text-sm text-foreground shadow-sm " +
-    "placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-60";
+const RECIPES_QUERY_KEY = ["recipes"] as const; // NEW
 
 /* ============================================================================
- * EditRecipePage
+ * Page
  * ============================================================================
  */
 
 const EditRecipePage: React.FC = () => {
     const { id } = useParams();
     const recipeId = Number(id);
-
     const navigate = useNavigate();
+    const queryClient = useQueryClient(); // NEW
 
     const [recipe, setRecipe] = useState<Recipe | null>(null);
 
@@ -61,7 +66,8 @@ const EditRecipePage: React.FC = () => {
         [ingredientsText]
     );
 
-    const canSubmit = title.trim().length > 0 && !saving && !!recipe;
+    const canSubmit =
+        title.trim().length > 0 && !saving && !!recipe;
 
     function toggleTag(tag: RecipeTag) {
         setSelectedTags((prev) =>
@@ -117,7 +123,18 @@ const EditRecipePage: React.FC = () => {
 
         try {
             setSaving(true);
+
             await updateRecipe(recipeId, payload);
+
+            // 🔑 Cache invalidieren (wichtig!)
+            await queryClient.invalidateQueries({
+                queryKey: RECIPES_QUERY_KEY,
+            });
+
+            await queryClient.invalidateQueries({
+                queryKey: ["recipe", recipeId],
+            });
+
             navigate(ROUTES.recipes);
         } catch (err) {
             setErrorMsg(getErrorMessage(err));
@@ -156,7 +173,6 @@ const EditRecipePage: React.FC = () => {
             }
         >
             {errorMsg && <Alert variant="error">{errorMsg}</Alert>}
-
             {loading && <Alert variant="info">Lade Rezept…</Alert>}
 
             {!loading && !recipe && (
@@ -172,20 +188,14 @@ const EditRecipePage: React.FC = () => {
                     className="space-y-6"
                     noValidate
                 >
-                    {/* Titel */}
-                    <section className="space-y-2">
-                        <label className="text-sm font-semibold">
-                            Titel <span className="text-destructive">*</span>
-                        </label>
-                        <input
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            className={inputBase}
-                            maxLength={120}
-                            disabled={saving}
-                            required
-                        />
-                    </section>
+                    <Input
+                        label="Titel"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        maxLength={120}
+                        disabled={saving}
+                        required
+                    />
 
                     {/* Zutaten */}
                     <section className="space-y-2">
@@ -194,10 +204,12 @@ const EditRecipePage: React.FC = () => {
                             <h3 className="text-sm font-semibold">Zutaten</h3>
                         </div>
 
-                        <textarea
+                        <Textarea
                             value={ingredientsText}
-                            onChange={(e) => setIngredientsText(e.target.value)}
-                            className={`${inputBase} min-h-[140px] resize-y`}
+                            onChange={(e) =>
+                                setIngredientsText(e.target.value)
+                            }
+                            rows={6}
                             disabled={saving}
                         />
 
@@ -208,7 +220,7 @@ const EditRecipePage: React.FC = () => {
                                         <li key={`${ing}-${idx}`}>{ing}</li>
                                     ))}
                                     {parsedIngredients.length > 6 && (
-                                        <li className="text-muted-foreground">
+                                        <li>
                                             +{parsedIngredients.length - 6} weitere…
                                         </li>
                                     )}
@@ -224,10 +236,12 @@ const EditRecipePage: React.FC = () => {
                             <h3 className="text-sm font-semibold">Anleitung</h3>
                         </div>
 
-                        <textarea
+                        <Textarea
                             value={instruction}
-                            onChange={(e) => setInstruction(e.target.value)}
-                            className={`${inputBase} min-h-[160px] resize-y`}
+                            onChange={(e) =>
+                                setInstruction(e.target.value)
+                            }
+                            rows={7}
                             maxLength={10000}
                             disabled={saving}
                         />
@@ -242,13 +256,16 @@ const EditRecipePage: React.FC = () => {
 
                         <div className="flex flex-wrap gap-2">
                             {TAG_OPTIONS.map((opt) => {
-                                const active = selectedTags.includes(opt.value);
+                                const active =
+                                    selectedTags.includes(opt.value);
 
                                 return (
                                     <button
                                         key={opt.value}
                                         type="button"
-                                        onClick={() => toggleTag(opt.value)}
+                                        onClick={() =>
+                                            toggleTag(opt.value)
+                                        }
                                         disabled={saving}
                                         className={[
                                             "ui-focus inline-flex items-center rounded-full border px-3 py-1 text-sm transition",

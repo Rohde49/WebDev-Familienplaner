@@ -16,6 +16,7 @@ export * from "./error.util";
 export * from "./ui.util";
 export * from "./search.util";
 export * from "./sort.util";
+export * from "./date.util";
 
 // externe API
 export * from "./weather.util";

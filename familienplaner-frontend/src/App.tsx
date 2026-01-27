@@ -4,7 +4,7 @@
  */
 import React from "react";
 import { AppRouter } from "./router";
-import { NavBar } from "./components/NavBar";
+import { NavBar } from "./pages/NavBar.tsx";
 
 const App: React.FC = () => {
     return (

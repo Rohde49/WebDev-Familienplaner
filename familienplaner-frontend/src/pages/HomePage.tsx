@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { CloudSun, MapPin, CalendarClock } from "lucide-react";
 
-import { useAuth } from "../context/AuthContext";
-import { getDisplayName } from "../util/index.util";
-import { getTodayWeather, type WeatherData } from "../util/weather.util";
+import { useAuth } from "@/context/AuthContext";
+import { getDisplayName } from "@/util/index.util";
+import { getTodayWeather, type WeatherData } from "@/util/weather.util";
 
-import { HomeCardShell } from "../components/layout/HomeCardShell";
+import { PageLayout } from "@/components/layout/PageLayout";
+import { Card } from "@/components/ui/Card";
+import { Separator } from "@/components/ui/Separator";
 
 /* ============================================================================
  * HomePage
@@ -47,7 +49,7 @@ const HomePage: React.FC = () => {
         : "Ein ruhiger Ort, um den Familienalltag entspannt zu organisieren.";
 
     return (
-        <HomeCardShell>
+        <PageLayout>
             <div className="space-y-8">
                 {/* Header */}
                 <header className="space-y-2">
@@ -59,7 +61,7 @@ const HomePage: React.FC = () => {
                     </p>
                 </header>
 
-                <hr className="border-border" />
+                <Separator />
 
                 {/* Weather */}
                 <section className="space-y-3">
@@ -70,7 +72,7 @@ const HomePage: React.FC = () => {
                         </h2>
                     </div>
 
-                    <div className="rounded-2xl border bg-muted p-4">
+                    <Card className="p-4">
                         <div className="flex items-center justify-between">
                             <div className="space-y-1">
                                 <div className="flex items-center gap-2 text-sm font-medium">
@@ -84,7 +86,8 @@ const HomePage: React.FC = () => {
                                     </p>
                                 ) : (
                                     <p className="text-sm text-muted-foreground">
-                                        {weatherError ?? "Wetter wird geladen…"}
+                                        {weatherError ??
+                                            "Wetter wird geladen…"}
                                     </p>
                                 )}
                             </div>
@@ -98,15 +101,17 @@ const HomePage: React.FC = () => {
                                     />
                                 )}
 
-                                <p className="text-2xl font-semibold text-foreground">
-                                    {weather ? `${weather.temperature}°C` : "--°C"}
+                                <p className="text-2xl font-semibold">
+                                    {weather
+                                        ? `${weather.temperature}°C`
+                                        : "--°C"}
                                 </p>
                             </div>
                         </div>
-                    </div>
+                    </Card>
                 </section>
 
-                <hr className="border-border" />
+                <Separator />
 
                 {/* Outlook */}
                 <section className="space-y-3">
@@ -118,30 +123,36 @@ const HomePage: React.FC = () => {
                     </div>
 
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        <div className="rounded-2xl border bg-muted p-4 text-sm">
+                        <Card className="p-4 text-sm">
                             <p className="font-medium">Finanzen</p>
                             <p className="mt-1 text-muted-foreground">
-                                Einnahmen & regelmäßige Ausgaben im Blick behalten.
+                                Einnahmen & regelmäßige Ausgaben im Blick
+                                behalten.
                             </p>
-                        </div>
+                        </Card>
 
-                        <div className="rounded-2xl border bg-muted p-4 text-sm">
-                            <p className="font-medium">Aufgaben & Planung</p>
-                            <p className="mt-1 text-muted-foreground">
-                                Gemeinsame To-Dos für den Familienalltag.
+                        <Card className="p-4 text-sm">
+                            <p className="font-medium">
+                                Aufgaben & Planung
                             </p>
-                        </div>
+                            <p className="mt-1 text-muted-foreground">
+                                Gemeinsame To-dos für den Familienalltag.
+                            </p>
+                        </Card>
 
-                        <div className="rounded-2xl border bg-muted p-4 text-sm">
-                            <p className="font-medium">Familienübersicht</p>
-                            <p className="mt-1 text-muted-foreground">
-                                Alles Wichtige an einem Ort – Schritt für Schritt.
+                        <Card className="p-4 text-sm">
+                            <p className="font-medium">
+                                Familienübersicht
                             </p>
-                        </div>
+                            <p className="mt-1 text-muted-foreground">
+                                Alles Wichtige an einem Ort – Schritt für
+                                Schritt.
+                            </p>
+                        </Card>
                     </div>
                 </section>
             </div>
-        </HomeCardShell>
+        </PageLayout>
     );
 };
 

@@ -2,15 +2,17 @@ import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { List, AlignLeft, Tag, ArrowLeft, Plus } from "lucide-react";
 
-import { ROUTES } from "../../router/paths";
-import { createRecipe } from "../../api/index.api";
-import type { CreateRecipeRequestDto, RecipeTag } from "../../types/index.types";
-import { getErrorMessage } from "../../util/index.util";
+import { ROUTES } from "@/router/paths";
+import { createRecipe } from "@/api/index.api";
+import type { CreateRecipeRequestDto, RecipeTag } from "@/types/index.types";
+import { getErrorMessage } from "@/util/index.util";
 
-import { RecipeFormShell } from "../../components/layout/RecipeFormShell";
-import { Alert } from "../../components/ui/Alert";
-import { Button } from "../../components/ui/Button.tsx";
-import { Badge } from "../../components/ui/Badge.tsx";
+import { RecipeFormShell } from "@/components/layout/RecipeFormShell";
+import { Alert } from "@/components/ui/Alert";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 
 /* ============================================================================
  * Constants
@@ -26,12 +28,8 @@ const TAG_OPTIONS: { value: RecipeTag; label: string }[] = [
     { value: "WEIHNACHTEN", label: "Weihnachten" },
 ];
 
-const inputBase =
-    "ui-focus w-full rounded-xl border bg-input px-3 py-2 text-sm text-foreground shadow-sm " +
-    "placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-60";
-
 /* ============================================================================
- * AddRecipePage
+ * Page
  * ============================================================================
  */
 
@@ -105,7 +103,11 @@ const AddRecipePage: React.FC = () => {
                         </Link>
                     </Button>
 
-                    <Button type="submit" disabled={!canSubmit} form="add-recipe-form">
+                    <Button
+                        type="submit"
+                        form="add-recipe-form"
+                        disabled={!canSubmit}
+                    >
                         <Plus className="mr-2 h-4 w-4" />
                         {loading ? "Speichern…" : "Speichern"}
                     </Button>
@@ -121,20 +123,15 @@ const AddRecipePage: React.FC = () => {
                 noValidate
             >
                 {/* Titel */}
-                <section className="space-y-2">
-                    <label className="text-sm font-semibold">
-                        Titel <span className="text-destructive">*</span>
-                    </label>
-                    <input
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder="z. B. Pfannkuchen"
-                        className={inputBase}
-                        maxLength={120}
-                        disabled={loading}
-                        required
-                    />
-                </section>
+                <Input
+                    label="Titel"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="z. B. Pfannkuchen"
+                    maxLength={120}
+                    disabled={loading}
+                    required
+                />
 
                 {/* Zutaten */}
                 <section className="space-y-2">
@@ -143,11 +140,11 @@ const AddRecipePage: React.FC = () => {
                         <h3 className="text-sm font-semibold">Zutaten</h3>
                     </div>
 
-                    <textarea
+                    <Textarea
                         value={ingredientsText}
                         onChange={(e) => setIngredientsText(e.target.value)}
                         placeholder={"z. B.\n200g Mehl\n2 Eier\n300ml Milch"}
-                        className={`${inputBase} min-h-[140px] resize-y`}
+                        rows={6}
                         disabled={loading}
                     />
 
@@ -158,7 +155,7 @@ const AddRecipePage: React.FC = () => {
                                     <li key={`${ing}-${idx}`}>{ing}</li>
                                 ))}
                                 {parsedIngredients.length > 6 && (
-                                    <li className="text-muted-foreground">
+                                    <li>
                                         +{parsedIngredients.length - 6} weitere…
                                     </li>
                                 )}
@@ -174,11 +171,11 @@ const AddRecipePage: React.FC = () => {
                         <h3 className="text-sm font-semibold">Anleitung</h3>
                     </div>
 
-                    <textarea
+                    <Textarea
                         value={instruction}
                         onChange={(e) => setInstruction(e.target.value)}
                         placeholder="Schritt für Schritt…"
-                        className={`${inputBase} min-h-[160px] resize-y`}
+                        rows={7}
                         maxLength={10000}
                         disabled={loading}
                     />

@@ -17,8 +17,22 @@ export const RecipeFormShell: React.FC<RecipeFormShellProps> = ({
                                                                     actions,
                                                                 }) => {
     return (
-        <div className="ui-container pt-6 sm:pt-8">
-            <section className="ui-card p-6 sm:p-8 space-y-6">
+        <div
+            className="
+                mx-auto w-full max-w-5xl
+                px-4 sm:px-6
+                pt-6 sm:pt-8
+            "
+        >
+            <section
+                className="
+                    rounded-2xl border border-border
+                    bg-card text-card-foreground
+                    p-6 sm:p-8
+                    space-y-6
+                    shadow-sm
+                "
+            >
                 {/* Header */}
                 <header className="space-y-4">
                     <div className="flex items-start justify-between gap-4">
@@ -34,24 +48,41 @@ export const RecipeFormShell: React.FC<RecipeFormShellProps> = ({
                             )}
                         </div>
 
-                        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border bg-muted">
-                            <ChefHat className="h-5 w-5" />
+                        <div
+                            className="
+                                grid h-11 w-11 shrink-0 place-items-center
+                                rounded-2xl border border-border
+                                bg-muted
+                            "
+                        >
+                            <ChefHat className="h-5 w-5 text-muted-foreground" />
                         </div>
                     </div>
 
-                    {tags && <div className="flex flex-wrap gap-2">{tags}</div>}
+                    {tags && (
+                        <div className="flex flex-wrap gap-2">
+                            {tags}
+                        </div>
+                    )}
                 </header>
 
                 <hr className="border-border" />
 
                 {/* Content */}
-                <div className="space-y-6">{children}</div>
+                <div className="space-y-6">
+                    {children}
+                </div>
 
                 {/* Actions */}
                 {actions && (
                     <>
                         <hr className="border-border" />
-                        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div
+                            className="
+                                flex flex-col-reverse gap-3
+                                sm:flex-row sm:items-center sm:justify-between
+                            "
+                        >
                             {actions}
                         </div>
                     </>

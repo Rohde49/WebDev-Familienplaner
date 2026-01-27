@@ -2,13 +2,18 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Pencil, Trash2 } from "lucide-react";
 
-import type { Recipe } from "../../types/index.types";
-import { formatRecipeTag } from "../../util/index.util";
-import { ROUTES } from "../../router/paths";
+import type { Recipe } from "@/types/index.types";
+import { formatRecipeTag } from "@/util/index.util";
+import { ROUTES } from "@/router/paths";
 
-import { Card, CardHeader, CardContent, CardFooter } from "./card";
-import { Badge } from "./Badge.tsx";
-import { Button } from "./Button.tsx";
+import {
+    Card,
+    CardHeader,
+    CardContent,
+    CardFooter,
+} from "../ui/Card";
+import { Badge } from "../ui/Badge";
+import { Button } from "../ui/Button";
 
 /* ============================================================================
  * Types
@@ -50,35 +55,60 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
                                                       }) => {
     return (
         <Card
+            role="button"
+            tabIndex={0}
             onClick={() => onOpen(recipe.id)}
+            onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onOpen(recipe.id);
+                }
+            }}
             className="
-                group cursor-pointer rounded-2xl
+                group cursor-pointer
+                rounded-2xl
+                bg-background
+                border border-border
                 transition-all
-                hover:shadow-md
-                hover:ring-1 hover:ring-primary/30
+                hover:-translate-y-0.5
+                hover:shadow-lg
+                hover:border-primary/30
+                focus-visible:outline-none
+                focus-visible:ring-2
+                focus-visible:ring-primary/40
             "
         >
             {/* Header */}
             <CardHeader className="space-y-2">
                 <div className="flex items-start justify-between gap-2">
-                    <h3 className="text-lg font-semibold line-clamp-2">
+                    <h3
+                        className="
+                            line-clamp-2
+                            text-lg font-semibold
+                            text-foreground
+                            transition-colors
+                            group-hover:text-primary
+                        "
+                    >
                         {recipe.title}
                     </h3>
 
                     {recipe.owner && (
-                        <Badge variant="secondary">{recipe.owner}</Badge>
+                        <Badge variant="secondary">
+                            {recipe.owner}
+                        </Badge>
                     )}
                 </div>
 
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground/90">
                     Aktualisiert: {formatDateTime(recipe.updatedAt)}
                 </p>
 
                 {/* Tags */}
                 <div className="flex flex-wrap gap-1.5">
-                    {(recipe.tags ?? []).slice(0, 2).map((t) => (
-                        <Badge key={t} variant="outline">
-                            {formatRecipeTag(t)}
+                    {(recipe.tags ?? []).slice(0, 2).map((tag) => (
+                        <Badge key={tag} variant="outline">
+                            {formatRecipeTag(tag)}
                         </Badge>
                     ))}
 
@@ -97,19 +127,24 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
 
             {/* Actions */}
             <CardFooter
+                onClick={(e) => e.stopPropagation()}
                 className="
+                    mt-2
                     flex justify-end gap-2
+                    border-t border-border/50
+                    pt-3
                     opacity-100 sm:opacity-0
                     sm:group-hover:opacity-100
                     transition-opacity
                 "
-                onClick={(e) => e.stopPropagation()}
             >
+                {/* Edit – primäre Aktion */}
                 <Button
                     asChild
                     size="sm"
-                    variant="secondary"
+                    variant="primary"
                     disabled={!canEdit}
+                    className="shadow-sm hover:shadow"
                 >
                     <Link to={ROUTES.recipeEdit(recipe.id)}>
                         <Pencil className="mr-1 h-4 w-4" />
@@ -117,11 +152,15 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
                     </Link>
                 </Button>
 
+                {/* Delete – Warnaktion */}
                 <Button
                     size="sm"
                     variant="destructive"
                     disabled={!canEdit}
-                    onClick={() => onDelete(recipe.id, recipe.title)}
+                    className="shadow-sm hover:shadow-md"
+                    onClick={() =>
+                        onDelete(recipe.id, recipe.title)
+                    }
                 >
                     <Trash2 className="mr-1 h-4 w-4" />
                     Löschen
