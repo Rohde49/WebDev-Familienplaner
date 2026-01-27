@@ -1,4 +1,5 @@
-import type { RecipeTag, Recipe } from "../types/index.types";
+import type { RecipeTag, Recipe, User } from "../types/index.types";
+import { isAdmin } from "./index.util";
 
 /* ============================================================================
  * Recipes – Utilities für Recipe Pages
@@ -37,6 +38,22 @@ export function formatRecipeTag(tag: RecipeTag): string {
 }
 
 /**
+ * Erkennt, ob User berechtigt ist Rezept zu bearbeiten/löschen
+ * @param user
+ * @param recipe
+ */
+export function canEditOrDeleteRecipe(
+    user: User | null | undefined,
+    recipe: Recipe
+): boolean {
+    if (!user) return false;
+
+    if (isAdmin(user)) return true;
+
+    return recipe.owner === user.username;
+}
+
+/**
  * Konvertiert Textarea-Input (1 pro Zeile) in eine Zutatenliste.
  */
 export function parseIngredients(text: string): string[] {
@@ -60,9 +77,3 @@ export function sortRecipesByUpdatedAtDesc(recipes: Recipe[]): Recipe[] {
     return [...recipes].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 }
 
-/**
- * Bestätigungs-Text fürs Löschen.
- */
-export function getDeleteConfirmText(title: string): string {
-    return `Rezept wirklich löschen?\n\n"${title}"`;
-}

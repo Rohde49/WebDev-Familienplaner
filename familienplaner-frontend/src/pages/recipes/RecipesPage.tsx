@@ -1,26 +1,41 @@
 /*
  * ============================================================================
- * RecipesPage – Rezeptübersicht (RecipeBookShell, 2x4 Grid, UX polished)
+ * RecipesPage – Rezeptübersicht (Search + Sort + RecipeBookShell)
  * ============================================================================
  */
 
 import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChefHat, Plus, RefreshCcw, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+    ChefHat,
+    Plus,
+    RefreshCcw,
+    Search,
+    ChevronLeft,
+    ChevronRight,
+} from "lucide-react";
 
 import { ROUTES } from "@/router/paths";
 import { useAuth } from "@/context/AuthContext";
 
 import type { Recipe } from "@/types/index.types";
 import { getAllRecipes, deleteRecipe } from "@/api/index.api";
-import { getErrorMessage, isAdmin, uiToast } from "@/util/index.util";
+import {
+    getErrorMessage,
+    isAdmin,
+    uiToast,
+    filterRecipes,
+} from "@/util/index.util";
+import {
+    sortRecipes,
+    type RecipeSortMode,
+} from "@/util/sort.util";
 
 import { RecipeBookShell } from "@/components/layout/RecipeBookShell";
 import { RecipeCard } from "@/components/ui/RecipeCard";
-
-import { Button } from "../../components/ui/button";
-import { Card, CardHeader, CardContent, CardFooter } from "../../components/ui/card";
+import { Button } from "@/components/ui/Button.tsx";
+import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import {
     Dialog,
     DialogContent,
@@ -28,11 +43,11 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "../../components/ui/dialog";
-import { Skeleton } from "../../components/ui/skeleton";
+} from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/Skeleton.tsx";
 
 /* ============================================================================
- * Helpers
+ * Config
  * ============================================================================
  */
 
@@ -55,6 +70,9 @@ const RecipesPage: React.FC = () => {
     const admin = user ? isAdmin(user) : false;
 
     const [deleteTarget, setDeleteTarget] = useState<DeleteTarget>(null);
+    const [search, setSearch] = useState("");
+    const [sortMode, setSortMode] =
+        useState<RecipeSortMode>("TITLE_ASC");
 
     /* -------------------------
      * Data
@@ -66,27 +84,28 @@ const RecipesPage: React.FC = () => {
     });
 
     const deleteMutation = useMutation({
-        mutationFn: async (id: number) => {
-            await deleteRecipe(id);
-        },
+        mutationFn: deleteRecipe,
         onSuccess: async () => {
             uiToast.success("Rezept gelöscht.");
             setDeleteTarget(null);
-            await queryClient.invalidateQueries({ queryKey: RECIPES_QUERY_KEY });
+            await queryClient.invalidateQueries({
+                queryKey: RECIPES_QUERY_KEY,
+            });
         },
         onError: (err) => uiToast.error(getErrorMessage(err)),
     });
 
-    const sortedRecipes = useMemo(() => {
-        const list = recipesQuery.data ?? [];
-        return [...list].sort((a, b) => {
-            const aTime = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
-            const bTime = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
-            return bTime - aTime;
-        });
-    }, [recipesQuery.data]);
+    /* -------------------------
+     * Search + Sort
+     * ------------------------- */
 
-    const visibleRecipes = sortedRecipes.slice(0, PAGE_SIZE);
+    const processedRecipes = useMemo(() => {
+        const base = recipesQuery.data ?? [];
+        const filtered = filterRecipes(base, search);
+        return sortRecipes(filtered, sortMode);
+    }, [recipesQuery.data, search, sortMode]);
+
+    const visibleRecipes = processedRecipes.slice(0, PAGE_SIZE);
 
     const canEditOrDelete = (r: Recipe) => {
         const isOwner = username && r.owner === username;
@@ -104,22 +123,45 @@ const RecipesPage: React.FC = () => {
             description="Deine persönliche Rezeptsammlung – ruhig, übersichtlich und jederzeit erweiterbar."
             actions={
                 <>
-                    {/* Search (Placeholder) */}
+                    {/* Search */}
                     <div className="relative w-full sm:max-w-sm">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <input
                             type="text"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
                             placeholder="Rezepte durchsuchen …"
-                            disabled
                             className="
                                 w-full rounded-xl border
                                 bg-secondary/60
                                 pl-9 pr-3 py-2 text-sm
-                                text-muted-foreground
-                                cursor-not-allowed
+                                text-foreground
+                                placeholder:text-muted-foreground
                             "
                         />
                     </div>
+
+                    {/* Sort */}
+                    <select
+                        value={sortMode}
+                        onChange={(e) =>
+                            setSortMode(e.target.value as RecipeSortMode)
+                        }
+                        className="
+                            rounded-xl border bg-secondary/60
+                            px-3 py-2 text-sm
+                        "
+                    >
+                        <option value="TITLE_ASC">
+                            Titel (A-Z)
+                        </option>
+                        <option value="TITLE_DESC">
+                            Titel (Z-A)
+                        </option>
+                        <option value="OWNER_ASC">
+                            Besitzer (A–Z)
+                        </option>
+                    </select>
 
                     {/* Add */}
                     <Button asChild className="shrink-0">
@@ -160,14 +202,9 @@ const RecipesPage: React.FC = () => {
                             <CardHeader className="space-y-3">
                                 <Skeleton className="h-5 w-2/3" />
                                 <Skeleton className="h-3 w-1/3" />
-                                <div className="flex gap-2">
-                                    <Skeleton className="h-5 w-14 rounded-full" />
-                                    <Skeleton className="h-5 w-20 rounded-full" />
-                                </div>
                             </CardHeader>
                             <CardContent>
                                 <Skeleton className="h-4 w-full" />
-                                <Skeleton className="mt-2 h-4 w-5/6" />
                             </CardContent>
                         </Card>
                     ))}
@@ -176,29 +213,19 @@ const RecipesPage: React.FC = () => {
 
             {/* Empty */}
             {!recipesQuery.isLoading &&
-                !recipesQuery.isError &&
-                sortedRecipes.length === 0 && (
+                processedRecipes.length === 0 && (
                     <Card className="rounded-2xl">
-                        <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-                            <div className="mb-4 grid h-14 w-14 place-items-center rounded-2xl border bg-muted">
-                                <ChefHat className="h-6 w-6" />
-                            </div>
-                            <h3 className="font-semibold">Noch keine Rezepte</h3>
-                            <p className="mt-1 text-sm text-muted-foreground">
-                                Erstelle dein erstes Rezept, um loszulegen.
+                        <CardContent className="py-16 text-center">
+                            <ChefHat className="mx-auto h-8 w-8 text-muted-foreground" />
+                            <p className="mt-2 text-sm text-muted-foreground">
+                                Keine Rezepte gefunden
                             </p>
-                            <Button asChild className="mt-6">
-                                <Link to={ROUTES.addRecipe}>
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Rezept erstellen
-                                </Link>
-                            </Button>
                         </CardContent>
                     </Card>
                 )}
 
             {/* Grid */}
-            {!recipesQuery.isLoading && visibleRecipes.length > 0 && (
+            {visibleRecipes.length > 0 && (
                 <>
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                         {visibleRecipes.map((r) => (
@@ -206,7 +233,9 @@ const RecipesPage: React.FC = () => {
                                 key={r.id}
                                 recipe={r}
                                 canEdit={canEditOrDelete(r)}
-                                onOpen={(id) => navigate(ROUTES.recipeDetail(id))}
+                                onOpen={(id) =>
+                                    navigate(ROUTES.recipeDetail(id))
+                                }
                                 onDelete={(id, title) =>
                                     setDeleteTarget({ id, title })
                                 }
@@ -241,11 +270,8 @@ const RecipesPage: React.FC = () => {
                             {deleteTarget && (
                                 <>
                                     Willst du{" "}
-                                    <span className="font-medium">
-                                        „{deleteTarget.title}“
-                                    </span>{" "}
-                                    wirklich löschen? Diese Aktion kann nicht
-                                    rückgängig gemacht werden.
+                                    <strong>{deleteTarget.title}</strong>{" "}
+                                    wirklich löschen?
                                 </>
                             )}
                         </DialogDescription>
@@ -264,11 +290,8 @@ const RecipesPage: React.FC = () => {
                                 deleteTarget &&
                                 deleteMutation.mutate(deleteTarget.id)
                             }
-                            disabled={deleteMutation.isPending}
                         >
-                            {deleteMutation.isPending
-                                ? "Löschen…"
-                                : "Löschen"}
+                            Löschen
                         </Button>
                     </DialogFooter>
                 </DialogContent>

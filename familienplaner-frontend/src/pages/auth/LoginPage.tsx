@@ -16,39 +16,13 @@ import { Alert } from "@/components/ui/Alert";
  * ========================================================================== */
 
 const inputBase =
-    "ui-focus w-full rounded-xl border bg-input px-3 py-2 text-sm text-foreground shadow-sm " +
-    "placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-60";
+    "w-full rounded-xl border bg-input px-3 py-2 text-sm " +
+    "text-foreground shadow-sm transition-colors " +
+    "placeholder:text-muted-foreground " +
+    "disabled:cursor-not-allowed disabled:opacity-60";
 
 const labelBase = "text-sm font-medium text-foreground";
 
-/* ============================================================================
- * Alert
- * ==========================================================================
-
-function Alert({
-                   variant,
-                   children,
-               }: {
-    variant: "error" | "info";
-    children: React.ReactNode;
-}) {
-    const cls =
-        variant === "error"
-            ? "border-destructive/30 bg-destructive/10"
-            : "border-border bg-muted";
-
-    const Icon = variant === "error" ? AlertTriangle : Info;
-
-    return (
-        <div className={`rounded-2xl border p-4 text-sm text-foreground ${cls}`}>
-            <div className="flex items-start gap-3">
-                <Icon className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
-                <div className="min-w-0">{children}</div>
-            </div>
-        </div>
-    );
-}
-*/
 /* ============================================================================
  * LoginPage
  * ========================================================================== */

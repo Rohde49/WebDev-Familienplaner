@@ -1,8 +1,8 @@
-import type { Recipe } from "@/types/index.types";
+import type { Recipe } from "../types/index.types";
 
 export type RecipeSortMode =
-    | "UPDATED_DESC"
-    | "UPDATED_ASC"
+    | "TITLE_ASC"
+    | "TITLE_DESC"
     | "OWNER_ASC";
 
 /**
@@ -15,12 +15,19 @@ export function sortRecipes(
     const list = [...recipes];
 
     switch (mode) {
-        case "UPDATED_ASC":
-            return list.sort((a, b) => {
-                const aTime = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
-                const bTime = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
-                return aTime - bTime;
-            });
+        case "TITLE_ASC":
+            return list.sort((a, b) =>
+                a.title.localeCompare(b.title, "de", {
+                    sensitivity: "base",
+                })
+            );
+
+        case "TITLE_DESC":
+            return list.sort((a, b) =>
+                b.title.localeCompare(a.title, "de", {
+                    sensitivity: "base",
+                })
+            );
 
         case "OWNER_ASC":
             return list.sort((a, b) =>
@@ -29,12 +36,7 @@ export function sortRecipes(
                 })
             );
 
-        case "UPDATED_DESC":
         default:
-            return list.sort((a, b) => {
-                const aTime = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
-                const bTime = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
-                return bTime - aTime;
-            });
+            return list;
     }
 }

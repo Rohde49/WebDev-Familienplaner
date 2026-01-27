@@ -9,8 +9,8 @@ import { getErrorMessage } from "../../util/index.util";
 
 import { RecipeFormShell } from "../../components/layout/RecipeFormShell";
 import { Alert } from "../../components/ui/Alert";
-import { Button } from "../../components/ui/button";
-import { Badge } from "../../components/ui/badge";
+import { Button } from "../../components/ui/Button.tsx";
+import { Badge } from "../../components/ui/Badge.tsx";
 
 /* ============================================================================
  * Constants

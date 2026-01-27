@@ -7,8 +7,8 @@ import { formatRecipeTag } from "../../util/index.util";
 import { ROUTES } from "../../router/paths";
 
 import { Card, CardHeader, CardContent, CardFooter } from "./card";
-import { Badge } from "./badge";
-import { Button } from "./button";
+import { Badge } from "./Badge.tsx";
+import { Button } from "./Button.tsx";
 
 /* ============================================================================
  * Types

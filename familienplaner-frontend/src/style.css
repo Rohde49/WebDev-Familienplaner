@@ -2,15 +2,15 @@
 @import "tw-animate-css";
 
 /* =============================================================================
-   Familienplaner – Global Styles (Best Practice, Light Only)
+   Familienplaner – Global Styles
    - Tailwind v4 entry
-   - Token-basierte Farben (shadcn-style CSS variables)
+   - Token-basierte Farben
    - Minimales Base Layer + kleine Component-Utilities
    ============================================================================= */
 
 /* =============================================================================
    1) Tailwind Theme Bridge (CSS Vars -> Tailwind Colors/Radii)
-   Damit kannst du in TSX sauber sowas nutzen wie:
+   Damit kann man in TSX sauber sowas nutzen wie:
    - bg-background, text-foreground, border-border, ring-ring, bg-card, ...
    ============================================================================= */
 @theme inline {
@@ -78,8 +78,11 @@
 :root {
     --radius: 0.625rem;
 
-    /* Background / Text */
+    /* Background */
     --background: oklch(0.985 0.014 195);
+
+
+    /* Text */
     --foreground: oklch(0.18 0.015 255);
 
     /* Surfaces */
@@ -89,7 +92,7 @@
     --popover: oklch(0.995 0.006 195);
     --popover-foreground: oklch(0.18 0.015 255);
 
-    /* Brand */
+    /* Aktionen */
     --primary: oklch(0.66 0.12 195);
     --primary-foreground: oklch(0.99 0.01 150);
 
@@ -194,6 +197,6 @@
     }
 
     .ui-focus {
-        @apply transition-all hover:shadow-md hover:ring-1 hover:ring-ring focus-within:ring-2 focus-within:ring-ring;
+        @apply transition-all hover:shadow-md hover:ring-1 hover:ring-ring focus-within:ring-2;
     }
 }

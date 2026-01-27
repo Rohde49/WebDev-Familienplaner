@@ -11,9 +11,9 @@ import { formatRecipeTag, getErrorMessage, isAdmin, uiToast } from "../../util/i
 
 import { RecipeFormShell } from "../../components/layout/RecipeFormShell";
 import { Alert } from "../../components/ui/Alert";
-import { Badge } from "../../components/ui/badge";
-import { Button } from "../../components/ui/button";
-import { Skeleton } from "../../components/ui/skeleton";
+import { Badge } from "../../components/ui/Badge.tsx";
+import { Button } from "../../components/ui/Button.tsx";
+import { Skeleton } from "../../components/ui/Skeleton.tsx";
 import {
     Dialog,
     DialogContent,

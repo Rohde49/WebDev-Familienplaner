@@ -6,30 +6,22 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 
-import type {
-    ChangePasswordRequest,
-    LoginResponse,
-    User,
-} from "../../types/index.types";
+import type {ChangePasswordRequest, LoginResponse, User,} from "@/types/index.types";
+import { useAuth } from "@/context/AuthContext";
 
-import {
-    changeCurrentUserPassword,
-    getAuthToken,
-    getCurrentUser,
-    updateCurrentUserProfile,
-} from "../../api/index.api";
+import {changeCurrentUserPassword, getAuthToken, getCurrentUser, updateCurrentUserProfile,} from "@/api/index.api";
 
-import { useAuth } from "../../context/AuthContext";
+
 import {
     getErrorMessage,
     validatePasswordChange,
     toProfileForm,
     toUpdateProfileRequest,
     type ProfileFormValues,
-} from "../../util/index.util";
+} from "@/util/index.util";
 
-import { Alert } from "../../components/ui/Alert";
-import { ProfileCardShell } from "../../components/layout/ProfileCardShell";
+import { Alert } from "@/components/ui/Alert";
+import { ProfileCardShell } from "@/components/layout/ProfileCardShell";
 
 /* ============================================================================
  * Styles
