@@ -13,8 +13,3 @@ cp .env.example .env
 ✔ `.env` korrekt behandelt  
 ✔ Keine Secrets committed  
 ✔ Git-Historie bleibt sauber  
-
-Wenn du willst, gehen wir als Nächstes:
-- Root-`README.md` gemeinsam durch  
-- oder Branch-Strategie (`main` vs `dev`)  
-- oder GitHub Issues / Projects für dein Studium sinnvoll aufsetzen
