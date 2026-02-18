@@ -120,7 +120,7 @@ const RecipesPage: React.FC = () => {
     return (
         <RecipeBookShell
             title="Rezepte"
-            description="Deine persönliche Rezeptsammlung – ruhig, übersichtlich und jederzeit erweiterbar."
+            description="Unsere persönliche Rezeptsammlung – ruhig, übersichtlich und jederzeit erweiterbar."
             actions={
                 <>
                     {/* Search */}

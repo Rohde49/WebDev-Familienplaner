@@ -232,7 +232,7 @@ const DetailRecipePage: React.FC = () => {
                         <div className="flex gap-2">
                             <Button
                                 asChild
-                                variant="secondary"
+                                variant="primary"
                                 disabled={!canEditOrDelete}
                             >
                                 <Link to={ROUTES.recipeEdit(recipe.id)}>
