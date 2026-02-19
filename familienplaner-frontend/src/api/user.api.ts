@@ -41,3 +41,11 @@ export async function changeCurrentUserPassword(
     const res = await axiosInstance.patch<User>("/users/me/password", payload);
     return res.data;
 }
+
+/**
+ * Löscht den aktuell eingeloggten Benutzer.
+ * Backend: DELETE /api/users/me
+ */
+export async function deleteCurrentUser(): Promise<void> {
+    await axiosInstance.delete("/users/me");
+}

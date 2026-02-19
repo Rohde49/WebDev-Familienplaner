@@ -5,6 +5,7 @@
  */
 
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import type {
     ChangePasswordRequest,
@@ -25,6 +26,7 @@ import {
     validatePasswordChange,
     toProfileForm,
     toUpdateProfileRequest,
+    deleteCurrentUser,
     type ProfileFormValues,
 } from "@/util/index.util";
 
@@ -33,6 +35,14 @@ import { Card } from "@/components/ui/Card";
 import { Alert } from "@/components/ui/Alert";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/Dialog";
 
 /* ============================================================================
  * Helpers
@@ -77,7 +87,8 @@ type PasswordFormState = {
  */
 
 const ProfilePage: React.FC = () => {
-    const { login } = useAuth();
+    const navigate = useNavigate();
+    const { login, logout } = useAuth();
 
     const [loading, setLoading] = useState(false);
     const [initialLoadDone, setInitialLoadDone] = useState(false);
@@ -92,6 +103,11 @@ const ProfilePage: React.FC = () => {
     const [passwordSaving, setPasswordSaving] = useState(false);
     const [passwordError, setPasswordError] = useState<string | null>(null);
     const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
+
+    // Delete account state
+    const [deleteOpen, setDeleteOpen] = useState(false);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+    const [deleteError, setDeleteError] = useState<string | null>(null);
 
     const [profileForm, setProfileForm] = useState<ProfileFormValues>({
         firstName: "",
@@ -253,6 +269,28 @@ const ProfilePage: React.FC = () => {
         }
     }
 
+    async function handleDeleteAccount() {
+        setDeleteError(null);
+
+        try {
+            setDeleteLoading(true);
+            await deleteCurrentUser();
+
+            // Session sauber schließen + Redirect
+            logout();
+            navigate("/", { replace: true });
+        } catch (err) {
+            setDeleteError(
+                getErrorMessage(
+                    err,
+                    "Account konnte nicht gelöscht werden."
+                )
+            );
+        } finally {
+            setDeleteLoading(false);
+        }
+    }
+
     return (
         <PageLayout>
             <div className="space-y-6">
@@ -324,35 +362,23 @@ const ProfilePage: React.FC = () => {
                                 <div className="grid gap-4 sm:grid-cols-2">
                                     <Input
                                         label="Vorname"
-                                        value={
-                                            profileForm.firstName
-                                        }
+                                        value={profileForm.firstName}
                                         onChange={(e) =>
-                                            setProfileForm(
-                                                (p) => ({
-                                                    ...p,
-                                                    firstName:
-                                                    e.target
-                                                        .value,
-                                                })
-                                            )
+                                            setProfileForm((p) => ({
+                                                ...p,
+                                                firstName: e.target.value,
+                                            }))
                                         }
                                     />
 
                                     <Input
                                         label="Nachname"
-                                        value={
-                                            profileForm.lastName
-                                        }
+                                        value={profileForm.lastName}
                                         onChange={(e) =>
-                                            setProfileForm(
-                                                (p) => ({
-                                                    ...p,
-                                                    lastName:
-                                                    e.target
-                                                        .value,
-                                                })
-                                            )
+                                            setProfileForm((p) => ({
+                                                ...p,
+                                                lastName: e.target.value,
+                                            }))
                                         }
                                     />
                                 </div>
@@ -361,14 +387,10 @@ const ProfilePage: React.FC = () => {
                                     label="E-Mail"
                                     value={profileForm.email}
                                     onChange={(e) =>
-                                        setProfileForm(
-                                            (p) => ({
-                                                ...p,
-                                                email:
-                                                e.target
-                                                    .value,
-                                            })
-                                        )
+                                        setProfileForm((p) => ({
+                                            ...p,
+                                            email: e.target.value,
+                                        }))
                                     }
                                 />
 
@@ -377,14 +399,10 @@ const ProfilePage: React.FC = () => {
                                     type="number"
                                     value={profileForm.age}
                                     onChange={(e) =>
-                                        setProfileForm(
-                                            (p) => ({
-                                                ...p,
-                                                age:
-                                                e.target
-                                                    .value,
-                                            })
-                                        )
+                                        setProfileForm((p) => ({
+                                            ...p,
+                                            age: e.target.value,
+                                        }))
                                     }
                                     hint="Optional – hilft bei personalisierten Anzeigen."
                                 />
@@ -401,7 +419,7 @@ const ProfilePage: React.FC = () => {
                             </form>
                         </Card>
 
-                        {/* Password */}
+                        {/* Password + Danger Zone */}
                         <Card className="p-6 sm:p-7 space-y-4">
                             <SectionHeader
                                 title="Passwort ändern"
@@ -426,54 +444,36 @@ const ProfilePage: React.FC = () => {
                                 <Input
                                     type="password"
                                     placeholder="Aktuelles Passwort"
-                                    value={
-                                        passwordForm.currentPassword
-                                    }
+                                    value={passwordForm.currentPassword}
                                     onChange={(e) =>
-                                        setPasswordForm(
-                                            (p) => ({
-                                                ...p,
-                                                currentPassword:
-                                                e.target
-                                                    .value,
-                                            })
-                                        )
+                                        setPasswordForm((p) => ({
+                                            ...p,
+                                            currentPassword: e.target.value,
+                                        }))
                                     }
                                 />
 
                                 <Input
                                     type="password"
                                     placeholder="Neues Passwort"
-                                    value={
-                                        passwordForm.newPassword
-                                    }
+                                    value={passwordForm.newPassword}
                                     onChange={(e) =>
-                                        setPasswordForm(
-                                            (p) => ({
-                                                ...p,
-                                                newPassword:
-                                                e.target
-                                                    .value,
-                                            })
-                                        )
+                                        setPasswordForm((p) => ({
+                                            ...p,
+                                            newPassword: e.target.value,
+                                        }))
                                     }
                                 />
 
                                 <Input
                                     type="password"
                                     placeholder="Neues Passwort bestätigen"
-                                    value={
-                                        passwordForm.newPasswordConfirm
-                                    }
+                                    value={passwordForm.newPasswordConfirm}
                                     onChange={(e) =>
-                                        setPasswordForm(
-                                            (p) => ({
-                                                ...p,
-                                                newPasswordConfirm:
-                                                e.target
-                                                    .value,
-                                            })
-                                        )
+                                        setPasswordForm((p) => ({
+                                            ...p,
+                                            newPasswordConfirm: e.target.value,
+                                        }))
                                     }
                                 />
 
@@ -494,9 +494,70 @@ const ProfilePage: React.FC = () => {
                                         : "Änderungen speichern"}
                                 </Button>
                             </form>
+
+                            {/* Danger Zone */}
+                            <div className="pt-4 border-t space-y-3">
+                                <p className="text-sm font-medium text-destructive">
+                                    Account löschen
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                    Diese Aktion ist dauerhaft und kann nicht rückgängig gemacht werden.
+                                </p>
+
+                                <Button
+                                    type="button"
+                                    variant="destructive"
+                                    className="w-full"
+                                    onClick={() => {
+                                        setDeleteError(null);
+                                        setDeleteOpen(true);
+                                    }}
+                                >
+                                    Account dauerhaft löschen
+                                </Button>
+                            </div>
                         </Card>
                     </div>
                 )}
+
+                {/* Delete Confirm Dialog */}
+                <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+                    <DialogContent className="rounded-2xl">
+                        <DialogHeader>
+                            <DialogTitle>
+                                Account wirklich löschen?
+                            </DialogTitle>
+                            <DialogDescription>
+                                Dein Account und alle zugehörigen Daten werden dauerhaft gelöscht.
+                                Diese Aktion kann nicht rückgängig gemacht werden.
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        {deleteError && (
+                            <Alert variant="error">
+                                {deleteError}
+                            </Alert>
+                        )}
+
+                        <DialogFooter className="gap-2">
+                            <Button
+                                variant="secondary"
+                                onClick={() => setDeleteOpen(false)}
+                                disabled={deleteLoading}
+                            >
+                                Abbrechen
+                            </Button>
+
+                            <Button
+                                variant="destructive"
+                                onClick={handleDeleteAccount}
+                                disabled={deleteLoading}
+                            >
+                                {deleteLoading ? "Wird gelöscht…" : "Endgültig löschen"}
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
         </PageLayout>
     );

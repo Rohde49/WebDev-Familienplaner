@@ -6,6 +6,7 @@
 
 import type { User, UpdateUserProfileRequest } from "../types/index.types";
 import { buildOptionalPayload, parseNullableInt, toNullableEmail, toNullableString } from "./form.util";
+import { deleteCurrentUser as deleteCurrentUserApi } from "../api/user.api";
 
 /**
  * Gibt einen sinnvollen Anzeigenamen zurück.
@@ -84,4 +85,17 @@ export function toUpdateProfileRequest(
     });
 
     return { valid: true, payload: base as UpdateUserProfileRequest };
+}
+
+/* ============================================================================
+ * Account Helpers
+ * ============================================================================
+ */
+
+/**
+ * Löscht den aktuell eingeloggten Benutzer.
+ * Kapselt den API-Call, damit Pages nicht direkt mit HTTP arbeiten.
+ */
+export async function deleteCurrentUser(): Promise<void> {
+    await deleteCurrentUserApi();
 }
