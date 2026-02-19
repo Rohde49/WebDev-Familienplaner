@@ -541,6 +541,7 @@ const ProfilePage: React.FC = () => {
 
                         <DialogFooter className="gap-2">
                             <Button
+                                type="button"
                                 variant="secondary"
                                 onClick={() => setDeleteOpen(false)}
                                 disabled={deleteLoading}
@@ -549,6 +550,7 @@ const ProfilePage: React.FC = () => {
                             </Button>
 
                             <Button
+                                type="button"
                                 variant="destructive"
                                 onClick={handleDeleteAccount}
                                 disabled={deleteLoading}
